@@ -19,6 +19,7 @@
     "dealId": "ID del negocio",
     "description": "Descripción",
     "contact": "Contacto",
+    "contactEmail": "Correo del contacto",
     "notes": "Notas",
     "assignedTo": "Asignado a",
     "noDeals": "No se encontraron negocios",

@@ -28,7 +28,11 @@
   })
 
   function goBack(): void {
-    router.push({ name: 'dashboard' })
+    if (window.history.state?.back) {
+      router.back()
+    } else {
+      router.push({ name: 'dashboard' })
+    }
   }
 
   function formatDate(iso: string): string {
@@ -153,6 +157,15 @@
           </div>
 
           <div class="detail__field">
+            <span class="detail__label">{{ t('deals.contactEmail') }}</span>
+            <a
+              class="detail__value detail__value--link"
+              :href="`mailto:${store.currentDeal.contactEmail}`">
+              {{ store.currentDeal.contactEmail }}
+            </a>
+          </div>
+
+          <div class="detail__field">
             <span class="detail__label">{{ t('deals.assignedTo') }}</span>
             <span class="detail__value">{{
               store.currentDeal.assignedTo
@@ -251,6 +264,17 @@
     font-size: 0.9375rem;
     font-weight: 500;
     color: var(--c-text);
+  }
+
+  .detail__value--link {
+    color: var(--c-accent);
+    text-decoration: none;
+    transition: color var(--duration) var(--ease);
+  }
+
+  .detail__value--link:hover {
+    color: var(--c-accent-hover);
+    text-decoration: underline;
   }
 
   .detail__value--mono {

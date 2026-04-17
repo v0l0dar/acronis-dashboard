@@ -19,6 +19,7 @@
     "dealId": "Deal ID",
     "description": "Description",
     "contact": "Contact",
+    "contactEmail": "Contact Email",
     "notes": "Notes",
     "assignedTo": "Assigned To",
     "noDeals": "No deals found",

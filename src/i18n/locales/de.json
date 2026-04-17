@@ -19,6 +19,7 @@
     "dealId": "Geschäfts-ID",
     "description": "Beschreibung",
     "contact": "Kontakt",
+    "contactEmail": "Kontakt-E-Mail",
     "notes": "Anmerkungen",
     "assignedTo": "Zugewiesen an",
     "noDeals": "Keine Geschäfte gefunden",

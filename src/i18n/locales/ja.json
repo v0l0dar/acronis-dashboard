@@ -19,6 +19,7 @@
     "dealId": "取引ID",
     "description": "説明",
     "contact": "連絡先",
+    "contactEmail": "連絡先メール",
     "notes": "備考",
     "assignedTo": "担当者",
     "noDeals": "取引が見つかりません",
