@@ -491,4 +491,10 @@
       text-align: center;
     }
   }
+
+  @media (min-width: 1280px) {
+    .filter-grid {
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+  }
 </style>

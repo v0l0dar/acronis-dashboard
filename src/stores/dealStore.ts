@@ -72,7 +72,7 @@ export const useDealStore = defineStore('deals', () => {
   })
 
   // Server returns the already-filtered page; this is a passthrough, not client-side filtering
-  const pageDeals = computed(() => deals.value)
+  const visibleDeals = computed(() => deals.value)
 
   // Checks whether a deal satisfies the currently active search query and filters.
   function dealMatchesCurrentFilters(deal: Deal): boolean {
@@ -249,6 +249,7 @@ export const useDealStore = defineStore('deals', () => {
     searchQuery.value = params.search
     page.value = params.page
     filters.value = params.filters
+    loadDeals(false)
   }
 
   function setRole(role: string): void {
@@ -343,7 +344,7 @@ export const useDealStore = defineStore('deals', () => {
     currentPartnerId,
     // Computed
     activeFilterCount,
-    pageDeals,
+    visibleDeals,
     // Actions
     loadDeals,
     loadDealDetail,

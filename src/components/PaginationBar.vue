@@ -1,38 +1,44 @@
-<script setup>
+<script setup lang="ts">
   import { computed } from 'vue'
   import { useI18n } from 'vue-i18n'
 
   const { t } = useI18n()
 
-  const props = defineProps({
-    page: { type: Number, required: true },
-    totalPages: { type: Number, required: true },
-    total: { type: Number, required: true },
-    pageSize: { type: Number, required: true }
-  })
+  const {
+    page,
+    totalPages,
+    total,
+    pageSize
+  } = defineProps<{
+    page: number
+    totalPages: number
+    total: number
+    pageSize: number
+  }>()
 
-  const emit = defineEmits(['page-change'])
+  const emit = defineEmits<{
+    'page-change': [page: number]
+  }>()
 
-  const from = computed(() => (props.page - 1) * props.pageSize + 1)
-  const to = computed(() => Math.min(props.page * props.pageSize, props.total))
+  const from = computed(() => (page - 1) * pageSize + 1)
+  const to = computed(() => Math.min(page * pageSize, total))
 
   const visiblePages = computed(() => {
-    const pages = []
-    const total = props.totalPages
-    const curr = props.page
+    const pages: (number | string)[] = []
+    const curr = page
 
-    if (total <= 7) {
-      for (let i = 1; i <= total; i++) pages.push(i)
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i)
     } else {
       pages.push(1)
       if (curr > 3) pages.push('...')
 
       const start = Math.max(2, curr - 1)
-      const end = Math.min(total - 1, curr + 1)
+      const end = Math.min(totalPages - 1, curr + 1)
       for (let i = start; i <= end; i++) pages.push(i)
 
-      if (curr < total - 2) pages.push('...')
-      pages.push(total)
+      if (curr < totalPages - 2) pages.push('...')
+      pages.push(totalPages)
     }
 
     return pages
@@ -67,7 +73,7 @@
           v-else
           class="pagination__btn"
           :class="{ 'pagination__btn--active': p === page }"
-          @click="emit('page-change', p)">
+          @click="emit('page-change', p as number)">
           {{ p }}
         </button>
       </template>
@@ -158,6 +164,24 @@
     .pagination {
       flex-direction: column;
       gap: var(--space-sm);
+    }
+  }
+
+  @media (max-width: 360px) {
+    .pagination__btn {
+      min-width: 30px;
+      height: 30px;
+      font-size: 0.75rem;
+    }
+    .pagination__info {
+      font-size: 0.75rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .pagination__btn {
+      min-width: 38px;
+      height: 38px;
     }
   }
 </style>

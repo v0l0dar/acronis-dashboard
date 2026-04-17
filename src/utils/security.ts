@@ -1,25 +1,14 @@
 export function sanitizeInput(input: unknown): string {
   if (typeof input !== 'string') return ''
-
-  return input
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;')
+  // Strip null bytes only. HTML escaping is Vue's responsibility at render time.
+  return input.replace(/\0/g, '').trim().slice(0, 1000)
 }
 
 export function sanitizeSearchQuery(query: unknown): string {
   if (typeof query !== 'string') return ''
-
-  return query
-    .trim()
-    .slice(0, 200)
-    .replace(/\s+/g, ' ')
-    .replace(/javascript\s*:/gi, '')
-    .replace(/data\s*:/gi, '')
-    .replace(/on\w+\s*=/gi, '')
+  // Only normalise whitespace and enforce length. Vue auto-escapes output;
+  // stripping patterns like "data:" or "on*=" here corrupts legitimate search terms.
+  return query.trim().slice(0, 200).replace(/\s+/g, ' ')
 }
 
 export function sanitizeNumericInput(
@@ -57,6 +46,13 @@ export function safeLog(label: string, data: unknown): void {
   } else {
     console.log(`[${label}]`, data)
   }
+}
+
+export const VALID_DEAL_STATUSES = ['Open', 'Approved', 'Rejected'] as const
+export type DealStatus = (typeof VALID_DEAL_STATUSES)[number]
+
+export function isValidDealStatus(value: string): value is DealStatus {
+  return (VALID_DEAL_STATUSES as readonly string[]).includes(value)
 }
 
 export const ROLES = {

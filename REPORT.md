@@ -13,7 +13,7 @@
 | 7   | `fetchDeals` — pagination + search + filters          | 2h         | 2h       | 0h        | Filter combinations needed careful ordering       |
 | 8   | `fetchDealById` — single record fetch                 | 0.5h       | 0.5h     | 0h        | Cache key per ID, null for invalid IDs            |
 | 9   | `pollUpdates` — simulated real-time updates           | 1h         | 0.75h    | -0.25h    | Random mutation logic was simple                  |
-| 10  | In-memory LRU cache utility                           | 1h         | 1h       | 0h        | TTL + LRU eviction for list & detail caches       |
+| 10  | In-memory cache utility                               | 1h         | 1.25h    | +0.25h    | TTL-based initially; LRU eviction (max 100 entries) added during refactor |
 | 11  | `DashboardView` — layout & table shell                | 1.5h       | 1.5h     | 0h        | CSS Grid layout for sidebar + main                |
 | 12  | `DealTable` — desktop table + mobile cards            | 2.5h       | 3h       | +0.5h     | Dual-render approach required extra CSS work      |
 | 13  | `DealDetailView` — detail page                        | 1.5h       | 1.5h     | 0h        | Two-column layout, back navigation                |
@@ -46,7 +46,7 @@
 
 ### 1. Dual Rendering for Responsive Tables
 
-The decision to render both a `<table>` and a card list (toggled by CSS) introduced some template duplication. The alternative — a single adaptive component — would have required more complex JS logic. CSS-only toggling was chosen for performance and simplicity.
+The decision to render both a `<table>` and a card list introduced some template duplication. Switching between the two is driven by JavaScript — the `useIsMobile` composable tracks viewport width via `ResizeObserver`, and `DealTable` uses `v-if`/`v-else` to mount only the relevant branch. This means only one branch is ever in the DOM at a time, which avoids hidden-element overhead at the cost of slightly more template code.
 
 ### 2. Filter State Synchronization
 
@@ -95,7 +95,7 @@ Using `Intl.DateTimeFormat` and `Intl.NumberFormat` with the active locale ensur
 - **No unit/integration tests** — The project lacks automated test coverage; this is the highest-priority tech debt item
 - **Mock data only** — The service layer simulates an API; switching to a real backend would require adding proper HTTP client setup (axios/fetch), auth headers, and error mapping
 - **RBAC is cosmetic** — The role switcher filters data client-side; a real implementation must enforce permissions server-side
-- **No URL state for filters** — Search and filter state is not persisted in the URL query string; refreshing the page resets them. Adding `vue-router` query param sync would fix this
+- **URL state for filters is implemented** — Search query, active filters, and current page are all persisted in the URL query string via `syncToUrl` / `initFromUrl` in `DashboardView`. Refreshing the page or sharing the URL restores the exact view
 - **Translation quality** — Japanese, German, and Spanish translations are functional but should be reviewed by native speakers for production use
 - **No virtualization** — For datasets >1000 records, the table rendering could benefit from virtual scrolling (e.g., `vue-virtual-scroller`); pagination mitigates this for now
-- **Polling efficiency** — The current polling approach refetches regardless of visibility; adding `document.visibilityState` checks would reduce unnecessary requests when the tab is backgrounded
+- **Polling visibility optimisation is implemented** — `startPolling()` attaches a `visibilitychange` listener that pauses the interval when the tab is hidden and resumes it (with an immediate tick) when the tab becomes visible again, avoiding unnecessary requests while the app is backgrounded

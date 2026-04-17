@@ -2,6 +2,7 @@
   import { useI18n } from 'vue-i18n'
   import { useDealStore } from '../stores/dealStore'
   import { ROLES } from '../utils/security'
+  import { LOCALE_STORAGE_KEY } from '../i18n'
   import { ref, onMounted, onUnmounted } from 'vue'
 
   const { t, locale } = useI18n()
@@ -24,6 +25,7 @@
 
   function setLanguage(code: string): void {
     locale.value = code
+    localStorage.setItem(LOCALE_STORAGE_KEY, code)
     langOpen.value = false
   }
 
@@ -338,6 +340,33 @@
     }
     .header__subtitle {
       display: none;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .header__inner {
+      padding: 0 var(--space-sm);
+    }
+    .header__logo {
+      display: none;
+    }
+    .header__title {
+      font-size: 0.9375rem;
+    }
+    .dropdown__trigger {
+      padding: 6px 8px;
+    }
+    .dropdown__label {
+      display: none;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .header__inner {
+      padding: 0 var(--space-2xl);
+    }
+    .header__subtitle {
+      display: block;
     }
   }
 </style>

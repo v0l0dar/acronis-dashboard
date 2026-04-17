@@ -2,9 +2,10 @@
   import { useI18n } from 'vue-i18n'
   import StatusBadge from './StatusBadge.vue'
   import { useIsMobile } from '../composables/useIsMobile'
+  import { useFormatter } from '../composables/useFormatter'
   import type { Deal } from '../types'
 
-  const { t, locale } = useI18n()
+  const { t } = useI18n()
 
   const {
     deals,
@@ -21,30 +22,13 @@
   }>()
 
   const { isMobile } = useIsMobile()
-
-  const LOCALE_CURRENCY: Record<string, string> = {
-    en: 'USD',
-    ja: 'JPY',
-    de: 'EUR',
-    es: 'EUR'
-  }
+  const { formatAmount: _formatAmount, formatDate } = useFormatter()
 
   function formatAmount(amount: number): string {
-    const currency = LOCALE_CURRENCY[locale.value] ?? 'USD'
-    return new Intl.NumberFormat(locale.value, {
-      style: 'currency',
-      currency,
+    return _formatAmount(amount, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
-    }).format(amount)
-  }
-
-  function formatDate(iso: string): string {
-    return new Intl.DateTimeFormat(locale.value, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    }).format(new Date(iso))
+    })
   }
 </script>
 
@@ -354,6 +338,14 @@
   }
   .skeleton--small {
     width: 70px;
+  }
+
+  @media (min-width: 1280px) {
+    .deal-table th,
+    .deal-table td {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
   }
 
   /* Empty state */

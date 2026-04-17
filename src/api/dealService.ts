@@ -148,7 +148,7 @@ export async function fetchDealById(dealId: string, signal?: AbortSignal | null)
   return deal
 }
 
-export async function pollUpdates(_since: string): Promise<Deal[]> {
+export async function pollUpdates(since: string): Promise<Deal[]> {
   await simulateLatency()
 
   if (Math.random() < 0.2) {
@@ -167,11 +167,10 @@ export async function pollUpdates(_since: string): Promise<Deal[]> {
 
     listCache.clear()
     detailCache.invalidate(`deal:${deal.dealId}`)
-
-    return [deal]
   }
 
-  return []
+  const sinceTime = new Date(since).getTime()
+  return _allDeals.filter(d => new Date(d.updatedDate).getTime() > sinceTime)
 }
 
 export function clearAllCaches(): void {

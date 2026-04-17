@@ -3,20 +3,16 @@
   import { useRoute, useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import { useDealStore } from '../stores/dealStore'
+  import { useFormatter } from '../composables/useFormatter'
   import StatusBadge from '../components/StatusBadge.vue'
   import ErrorState from '../components/ErrorState.vue'
 
-  const { t, locale } = useI18n()
+  const { t } = useI18n()
   const route = useRoute()
   const router = useRouter()
   const store = useDealStore()
 
-  const LOCALE_CURRENCY: Record<string, string> = {
-    en: 'USD',
-    ja: 'JPY',
-    de: 'EUR',
-    es: 'EUR'
-  }
+  const { formatAmount, formatDate: _formatDate } = useFormatter()
 
   const dealId = computed<string>(() => {
     const id = route.params.id
@@ -35,22 +31,12 @@
     router.push({ name: 'dashboard' })
   }
 
-  function formatAmount(amount: number): string {
-    const currency = LOCALE_CURRENCY[locale.value] ?? 'USD'
-    return new Intl.NumberFormat(locale.value, {
-      style: 'currency',
-      currency
-    }).format(amount)
-  }
-
   function formatDate(iso: string): string {
-    return new Intl.DateTimeFormat(locale.value, {
-      year: 'numeric',
+    return _formatDate(iso, {
       month: 'long',
-      day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
-    }).format(new Date(iso))
+    })
   }
 </script>
 
@@ -374,6 +360,30 @@
     }
     .detail__title {
       font-size: 1.25rem;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .detail__card {
+      padding: var(--space-sm);
+    }
+    .detail__title {
+      font-size: 1.125rem;
+    }
+    .detail__back {
+      margin-bottom: var(--space-md);
+    }
+    .detail__skeleton-grid {
+      padding: var(--space-md);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .detail__title {
+      font-size: 1.75rem;
+    }
+    .detail__grid {
+      grid-template-columns: repeat(3, 1fr);
     }
   }
 </style>

@@ -3,6 +3,7 @@
   import { useRoute, useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import { useDealStore } from '../stores/dealStore'
+  import { isValidDealStatus } from '../utils/security'
   import type { DealFilters } from '../types'
   import SearchBar from '../components/SearchBar.vue'
   import FilterPanel from '../components/FilterPanel.vue'
@@ -25,7 +26,7 @@
 
     const statuses: string[] =
       typeof q.statuses === 'string' && q.statuses
-        ? q.statuses.split(',').filter((s): s is string => s.length > 0)
+        ? q.statuses.split(',').filter(isValidDealStatus)
         : []
 
     const amountMin =
@@ -76,7 +77,6 @@
 
   onMounted(() => {
     initFromUrl()
-    store.loadDeals(false)
     store.startPolling()
   })
 
@@ -132,7 +132,7 @@
 
       <template v-else>
         <DealTable
-          :deals="store.pageDeals"
+          :deals="store.visibleDeals"
           :loading="store.loading"
           :is-filtered="
             store.searchQuery.length > 0 || store.activeFilterCount > 0
@@ -205,6 +205,12 @@
 
     .dashboard__toolbar {
       flex-direction: column;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .dashboard__title {
+      font-size: 1.75rem;
     }
   }
 </style>

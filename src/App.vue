@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
   import AppHeader from './components/AppHeader.vue'
 </script>
 
@@ -33,6 +33,18 @@
   @media (max-width: 768px) {
     .app-main {
       padding: var(--space-md);
+    }
+  }
+
+  @media (max-width: 360px) {
+    .app-main {
+      padding: var(--space-sm);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .app-main {
+      padding: var(--space-xl) var(--space-2xl);
     }
   }
 </style>
