@@ -1,0 +1,89 @@
+{
+  "app": {
+    "title": "Partnerportal",
+    "subtitle": "Geschäftsverwaltung"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "deals": "Geschäfte",
+    "back": "Zurück"
+  },
+  "deals": {
+    "title": "Geschäfte",
+    "dealName": "Geschäftsname",
+    "accountName": "Kontoname",
+    "status": "Status",
+    "amount": "Betrag",
+    "createdDate": "Erstellt am",
+    "updatedDate": "Aktualisiert am",
+    "dealId": "Geschäfts-ID",
+    "description": "Beschreibung",
+    "contact": "Kontakt",
+    "notes": "Anmerkungen",
+    "assignedTo": "Zugewiesen an",
+    "noDeals": "Keine Geschäfte gefunden",
+    "noDealsHint": "Es wurden noch keine Geschäfte erstellt",
+    "noDealsFiltered": "Keine Geschäfte entsprechen Ihrer Suche oder den Filtern",
+    "noDealsFilteredHint": "Passen Sie Ihre Filter an oder löschen Sie sie",
+    "notFound": "Geschäft nicht gefunden",
+    "notFoundHint": "Das gesuchte Geschäft existiert nicht oder wurde möglicherweise entfernt",
+    "openDeal": "Geschäft öffnen: {name}",
+    "loading": "Geschäfte werden geladen…",
+    "detail": "Geschäftsdetails",
+    "totalDeals": "Gesamt: {count} Geschäfte"
+  },
+  "status": {
+    "Open": "Offen",
+    "Approved": "Genehmigt",
+    "Rejected": "Abgelehnt"
+  },
+  "search": {
+    "placeholder": "Nach Name, Konto, Status oder ID suchen…",
+    "label": "Suche"
+  },
+  "filters": {
+    "title": "Filter",
+    "status": "Status",
+    "amount": "Betragsbereich",
+    "amountMin": "Mindestbetrag",
+    "amountMax": "Höchstbetrag",
+    "dateRange": "Datumsbereich",
+    "dateFrom": "Von",
+    "dateTo": "Bis",
+    "accountName": "Kontoname",
+    "dealName": "Geschäftsname",
+    "clearAll": "Alle löschen",
+    "activeFilters": "{count} aktiv",
+    "apply": "Filter anwenden",
+    "toggle": "Filter",
+    "amountRangeError": "Mindestbetrag darf den Höchstbetrag nicht überschreiten",
+    "dateRangeError": "Startdatum darf nicht nach dem Enddatum liegen"
+  },
+  "pagination": {
+    "page": "Seite {current} von {total}",
+    "prev": "Zurück",
+    "next": "Weiter",
+    "showing": "{from}–{to} von {total} angezeigt"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "partner": "Partner",
+    "label": "Rolle",
+    "adminHint": "Alle Geschäfte werden angezeigt",
+    "partnerHint": "Nur zugewiesene Geschäfte werden angezeigt"
+  },
+  "errors": {
+    "fetchFailed": "Geschäfte konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+    "detailFailed": "Geschäftsdetails konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+    "dealNotFound": "Dieses Geschäft konnte nicht gefunden werden.",
+    "retry": "Erneut versuchen",
+    "timeout": "Zeitüberschreitung. Bitte überprüfen Sie Ihre Verbindung."
+  },
+  "language": {
+    "label": "Sprache",
+    "en": "English",
+    "ja": "日本語",
+    "de": "Deutsch",
+    "es": "Español"
+  }
+}

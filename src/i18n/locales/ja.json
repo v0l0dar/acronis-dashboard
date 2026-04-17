@@ -1,0 +1,89 @@
+{
+  "app": {
+    "title": "パートナーポータル",
+    "subtitle": "取引管理"
+  },
+  "nav": {
+    "dashboard": "ダッシュボード",
+    "deals": "取引",
+    "back": "戻る"
+  },
+  "deals": {
+    "title": "取引一覧",
+    "dealName": "取引名",
+    "accountName": "アカウント名",
+    "status": "ステータス",
+    "amount": "金額",
+    "createdDate": "作成日",
+    "updatedDate": "更新日",
+    "dealId": "取引ID",
+    "description": "説明",
+    "contact": "連絡先",
+    "notes": "備考",
+    "assignedTo": "担当者",
+    "noDeals": "取引が見つかりません",
+    "noDealsHint": "まだ取引が作成されていません",
+    "noDealsFiltered": "検索条件またはフィルターに一致する取引がありません",
+    "noDealsFilteredHint": "フィルターを調整またはクリアしてください",
+    "notFound": "取引が見つかりません",
+    "notFoundHint": "お探しの取引は存在しないか、削除された可能性があります",
+    "openDeal": "取引を開く：{name}",
+    "loading": "取引を読み込んでいます…",
+    "detail": "取引詳細",
+    "totalDeals": "合計：{count} 件"
+  },
+  "status": {
+    "Open": "未処理",
+    "Approved": "承認済み",
+    "Rejected": "却下"
+  },
+  "search": {
+    "placeholder": "名前、アカウント、ステータス、IDで検索…",
+    "label": "検索"
+  },
+  "filters": {
+    "title": "フィルター",
+    "status": "ステータス",
+    "amount": "金額範囲",
+    "amountMin": "最小金額",
+    "amountMax": "最大金額",
+    "dateRange": "日付範囲",
+    "dateFrom": "開始日",
+    "dateTo": "終了日",
+    "accountName": "アカウント名",
+    "dealName": "取引名",
+    "clearAll": "すべてクリア",
+    "activeFilters": "{count} 件有効",
+    "apply": "フィルターを適用",
+    "toggle": "フィルター",
+    "amountRangeError": "最小金額は最大金額を超えることはできません",
+    "dateRangeError": "開始日は終了日より後にできません"
+  },
+  "pagination": {
+    "page": "{current}/{total} ページ",
+    "prev": "前へ",
+    "next": "次へ",
+    "showing": "{total} 件中 {from}〜{to} 件表示"
+  },
+  "roles": {
+    "admin": "管理者",
+    "partner": "パートナー",
+    "label": "役割",
+    "adminHint": "すべての取引を表示中",
+    "partnerHint": "割り当てられた取引のみ表示中"
+  },
+  "errors": {
+    "fetchFailed": "取引の読み込みに失敗しました。再試行してください。",
+    "detailFailed": "取引詳細の読み込みに失敗しました。再試行してください。",
+    "dealNotFound": "この取引は見つかりませんでした。",
+    "retry": "再試行",
+    "timeout": "リクエストがタイムアウトしました。接続を確認してください。"
+  },
+  "language": {
+    "label": "言語",
+    "en": "English",
+    "ja": "日本語",
+    "de": "Deutsch",
+    "es": "Español"
+  }
+}

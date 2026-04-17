@@ -1,0 +1,227 @@
+/* ============================================
+   Acronis Dashboard – Design Tokens & Global Styles
+   Aesthetic: Clean industrial with warm accents
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+	/* Colors */
+	--c-bg: #f5f3f0;
+	--c-surface: #ffffff;
+	--c-surface-alt: #faf9f7;
+	--c-border: #e4e0db;
+	--c-border-strong: #c9c3bb;
+	--c-text: #1a1816;
+	--c-text-secondary: #6b6560;
+	--c-text-muted: #9e9790;
+
+	/* Accent */
+	--c-accent: #d45a1e;
+	--c-accent-hover: #bf4e17;
+	--c-accent-light: #fef0e8;
+	--c-accent-subtle: #fdf6f1;
+
+	/* Status colors */
+	--c-open: #2e7d6f;
+	--c-open-bg: #e8f5f1;
+	--c-approved: #1a6bb5;
+	--c-approved-bg: #e6f0fa;
+	--c-rejected: #c43c3c;
+	--c-rejected-bg: #fce8e8;
+
+	/* Shadows */
+	--shadow-sm: 0 1px 2px rgba(26, 24, 22, 0.04);
+	--shadow-md: 0 4px 12px rgba(26, 24, 22, 0.06);
+	--shadow-lg: 0 8px 24px rgba(26, 24, 22, 0.08);
+	--shadow-focus: 0 0 0 3px rgba(212, 90, 30, 0.15);
+
+	/* Typography */
+	--font-body: 'DM Sans', -apple-system, sans-serif;
+	--font-mono: 'JetBrains Mono', monospace;
+
+	/* Spacing */
+	--space-xs: 4px;
+	--space-sm: 8px;
+	--space-md: 16px;
+	--space-lg: 24px;
+	--space-xl: 32px;
+	--space-2xl: 48px;
+
+	/* Radius */
+	--radius-sm: 6px;
+	--radius-md: 10px;
+	--radius-lg: 14px;
+
+	/* Transitions */
+	--ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+	--duration: 200ms;
+
+	/* Layout */
+	--sidebar-width: 260px;
+	--header-height: 64px;
+}
+
+/* Reset */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	font-size: 15px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+body {
+	font-family: var(--font-body);
+	color: var(--c-text);
+	background: var(--c-bg);
+	line-height: 1.6;
+	min-height: 100vh;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+button {
+	font-family: inherit;
+	cursor: pointer;
+	border: none;
+	background: none;
+	font-size: inherit;
+}
+
+input,
+select {
+	font-family: inherit;
+	font-size: inherit;
+}
+
+/* Utility */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--c-border-strong);
+	border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: var(--c-text-muted);
+}
+
+/* Animations */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes slideIn {
+	from {
+		opacity: 0;
+		transform: translateX(-12px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 0.4;
+	}
+	50% {
+		opacity: 0.8;
+	}
+}
+
+.fade-enter-active,
+.fade-leave-active {
+	transition: opacity var(--duration) var(--ease);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+	opacity: 0;
+}
+
+/* Toast / notification */
+.toast-container {
+	position: fixed;
+	bottom: var(--space-lg);
+	right: var(--space-lg);
+	z-index: 1000;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-sm);
+}
+
+.toast {
+	background: var(--c-text);
+	color: var(--c-bg);
+	padding: var(--space-md) var(--space-lg);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+	animation: fadeIn 0.3s var(--ease);
+	font-size: 0.875rem;
+	font-weight: 500;
+	max-width: 360px;
+}
+
+.toast--error {
+	background: var(--c-rejected);
+	color: #fff;
+}
+
+/* Responsive helpers */
+@media (max-width: 768px) {
+	html {
+		font-size: 14px;
+	}
+	:root {
+		--space-lg: 16px;
+		--space-xl: 24px;
+		--space-2xl: 32px;
+	}
+}
+
+@media (max-width: 480px) {
+	:root {
+		--space-lg: 12px;
+		--space-xl: 16px;
+		--space-2xl: 24px;
+	}
+}

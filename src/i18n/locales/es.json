@@ -1,0 +1,89 @@
+{
+  "app": {
+    "title": "Portal de Socios",
+    "subtitle": "Gestión de Negocios"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "deals": "Negocios",
+    "back": "Volver"
+  },
+  "deals": {
+    "title": "Negocios",
+    "dealName": "Nombre del negocio",
+    "accountName": "Nombre de cuenta",
+    "status": "Estado",
+    "amount": "Monto",
+    "createdDate": "Fecha de creación",
+    "updatedDate": "Fecha de actualización",
+    "dealId": "ID del negocio",
+    "description": "Descripción",
+    "contact": "Contacto",
+    "notes": "Notas",
+    "assignedTo": "Asignado a",
+    "noDeals": "No se encontraron negocios",
+    "noDealsHint": "Aún no se han creado negocios",
+    "noDealsFiltered": "Ningún negocio coincide con su búsqueda o filtros",
+    "noDealsFilteredHint": "Intente ajustar o borrar sus filtros",
+    "notFound": "Negocio no encontrado",
+    "notFoundHint": "El negocio que busca no existe o puede haber sido eliminado",
+    "openDeal": "Abrir negocio: {name}",
+    "loading": "Cargando negocios…",
+    "detail": "Detalles del negocio",
+    "totalDeals": "Total: {count} negocios"
+  },
+  "status": {
+    "Open": "Abierto",
+    "Approved": "Aprobado",
+    "Rejected": "Rechazado"
+  },
+  "search": {
+    "placeholder": "Buscar por nombre, cuenta, estado o ID…",
+    "label": "Buscar"
+  },
+  "filters": {
+    "title": "Filtros",
+    "status": "Estado",
+    "amount": "Rango de monto",
+    "amountMin": "Monto mínimo",
+    "amountMax": "Monto máximo",
+    "dateRange": "Rango de fechas",
+    "dateFrom": "Desde",
+    "dateTo": "Hasta",
+    "accountName": "Nombre de cuenta",
+    "dealName": "Nombre del negocio",
+    "clearAll": "Borrar todo",
+    "activeFilters": "{count} activos",
+    "apply": "Aplicar filtros",
+    "toggle": "Filtros",
+    "amountRangeError": "El monto mínimo no puede superar el monto máximo",
+    "dateRangeError": "La fecha de inicio no puede ser posterior a la fecha de fin"
+  },
+  "pagination": {
+    "page": "Página {current} de {total}",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "showing": "Mostrando {from}–{to} de {total}"
+  },
+  "roles": {
+    "admin": "Administrador",
+    "partner": "Socio",
+    "label": "Rol",
+    "adminHint": "Viendo todos los negocios",
+    "partnerHint": "Viendo solo negocios asignados"
+  },
+  "errors": {
+    "fetchFailed": "Error al cargar negocios. Intente de nuevo.",
+    "detailFailed": "Error al cargar detalles del negocio. Intente de nuevo.",
+    "dealNotFound": "Este negocio no pudo ser encontrado.",
+    "retry": "Reintentar",
+    "timeout": "Tiempo de espera agotado. Verifique su conexión."
+  },
+  "language": {
+    "label": "Idioma",
+    "en": "English",
+    "ja": "日本語",
+    "de": "Deutsch",
+    "es": "Español"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "app": {
+    "title": "Acronis Dashboard",
+    "subtitle": "Deal Management"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "deals": "Deals",
+    "back": "Back"
+  },
+  "deals": {
+    "title": "Deals",
+    "dealName": "Deal Name",
+    "accountName": "Account Name",
+    "status": "Status",
+    "amount": "Amount",
+    "createdDate": "Created Date",
+    "updatedDate": "Updated Date",
+    "dealId": "Deal ID",
+    "description": "Description",
+    "contact": "Contact",
+    "notes": "Notes",
+    "assignedTo": "Assigned To",
+    "noDeals": "No deals found",
+    "noDealsHint": "No deals have been created yet",
+    "noDealsFiltered": "No deals match your search or filters",
+    "noDealsFilteredHint": "Try adjusting or clearing your filters",
+    "notFound": "Deal not found",
+    "notFoundHint": "The deal you're looking for doesn't exist or may have been removed",
+    "openDeal": "Open deal: {name}",
+    "loading": "Loading deals…",
+    "detail": "Deal Details",
+    "totalDeals": "Total: {count} deals"
+  },
+  "status": {
+    "Open": "Open",
+    "Approved": "Approved",
+    "Rejected": "Rejected"
+  },
+  "search": {
+    "placeholder": "Search deals by name, account, status, or ID…",
+    "label": "Search"
+  },
+  "filters": {
+    "title": "Filters",
+    "status": "Status",
+    "amount": "Amount Range",
+    "amountMin": "Min amount",
+    "amountMax": "Max amount",
+    "dateRange": "Date Range",
+    "dateFrom": "From",
+    "dateTo": "To",
+    "accountName": "Account Name",
+    "dealName": "Deal Name",
+    "clearAll": "Clear All",
+    "activeFilters": "{count} active",
+    "apply": "Apply Filters",
+    "toggle": "Filters",
+    "amountRangeError": "Min amount cannot exceed max amount",
+    "dateRangeError": "Start date cannot be after end date"
+  },
+  "pagination": {
+    "page": "Page {current} of {total}",
+    "prev": "Previous",
+    "next": "Next",
+    "showing": "Showing {from}–{to} of {total}"
+  },
+  "roles": {
+    "admin": "Admin",
+    "partner": "Partner",
+    "label": "Role",
+    "adminHint": "Viewing all deals",
+    "partnerHint": "Viewing assigned deals only"
+  },
+  "errors": {
+    "fetchFailed": "Failed to load deals. Please try again.",
+    "detailFailed": "Failed to load deal details. Please try again.",
+    "dealNotFound": "This deal could not be found.",
+    "retry": "Retry",
+    "timeout": "Request timed out. Please check your connection."
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "ja": "日本語",
+    "de": "Deutsch",
+    "es": "Español"
+  }
+}
