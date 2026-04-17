@@ -441,4 +441,54 @@
       max-width: 100%;
     }
   }
+
+  @media (max-width: 360px) {
+    .filter-panel {
+      overflow: hidden;
+    }
+
+    .filter-panel__header {
+      padding: var(--space-xs) var(--space-sm);
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+    }
+
+    .filter-panel__body {
+      padding: var(--space-sm);
+      padding-top: var(--space-xs);
+    }
+
+    .filter-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-sm);
+    }
+
+    .filter-range {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 4px;
+    }
+
+    .filter-range__sep {
+      text-align: center;
+    }
+
+    .filter-range .filter-input {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .filter-input--small {
+      max-width: 100%;
+    }
+
+    .filter-chips {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .filter-chip {
+      text-align: center;
+    }
+  }
 </style>

@@ -18,14 +18,10 @@
   function initFromUrl(): void {
     const q = route.query
 
-    if (typeof q.search === 'string' && q.search) {
-      store.searchQuery = q.search
-    }
+    const search = typeof q.search === 'string' && q.search ? q.search : ''
 
-    if (typeof q.page === 'string') {
-      const p = parseInt(q.page, 10)
-      if (!isNaN(p) && p >= 1) store.page = p
-    }
+    const rawPage = typeof q.page === 'string' ? parseInt(q.page, 10) : NaN
+    const page = !isNaN(rawPage) && rawPage >= 1 ? rawPage : 1
 
     const statuses: string[] =
       typeof q.statuses === 'string' && q.statuses
@@ -37,15 +33,19 @@
     const amountMax =
       typeof q.amountMax === 'string' ? parseFloat(q.amountMax) : NaN
 
-    store.filters = {
-      statuses,
-      amountMin: isNaN(amountMin) ? null : amountMin,
-      amountMax: isNaN(amountMax) ? null : amountMax,
-      dateFrom: typeof q.dateFrom === 'string' ? q.dateFrom : '',
-      dateTo: typeof q.dateTo === 'string' ? q.dateTo : '',
-      accountName: typeof q.accountName === 'string' ? q.accountName : '',
-      dealName: typeof q.dealName === 'string' ? q.dealName : ''
-    }
+    store.setStateFromUrl({
+      search,
+      page,
+      filters: {
+        statuses,
+        amountMin: isNaN(amountMin) ? null : amountMin,
+        amountMax: isNaN(amountMax) ? null : amountMax,
+        dateFrom: typeof q.dateFrom === 'string' ? q.dateFrom : '',
+        dateTo: typeof q.dateTo === 'string' ? q.dateTo : '',
+        accountName: typeof q.accountName === 'string' ? q.accountName : '',
+        dealName: typeof q.dealName === 'string' ? q.dealName : ''
+      }
+    })
   }
 
   function syncToUrl(): void {
@@ -132,7 +132,7 @@
 
       <template v-else>
         <DealTable
-          :deals="store.filteredDeals"
+          :deals="store.pageDeals"
           :loading="store.loading"
           :is-filtered="
             store.searchQuery.length > 0 || store.activeFilterCount > 0
@@ -191,6 +191,20 @@
   @media (max-width: 768px) {
     .dashboard__title {
       font-size: 1.25rem;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .dashboard {
+      gap: var(--space-sm);
+    }
+
+    .dashboard__title {
+      font-size: 1.125rem;
+    }
+
+    .dashboard__toolbar {
+      flex-direction: column;
     }
   }
 </style>

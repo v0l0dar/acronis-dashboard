@@ -47,8 +47,16 @@ export const useDealStore = defineStore('deals', () => {
   let visibilityHandler: (() => void) | null = null
   const lastPollTimestamp = ref(new Date().toISOString())
 
-  // AbortController for in-flight loadDeals requests
+  // AbortControllers for in-flight requests
   let currentAbortController: AbortController | null = null
+  let currentDetailAbortController: AbortController | null = null
+
+  // In-flight guard for polling — prevents concurrent runPoll executions
+  let isPollInFlight = false
+
+  // Monotonically increasing generation counter for loadDeals; ensures the
+  // finally block only resets loading when this invocation is still the latest.
+  let loadDealsGeneration = 0
 
   // Computed
   const activeFilterCount = computed(() => {
@@ -63,8 +71,8 @@ export const useDealStore = defineStore('deals', () => {
     return count
   })
 
-  // Role filtering is applied at the API layer, so this is a passthrough
-  const filteredDeals = computed(() => deals.value)
+  // Server returns the already-filtered page; this is a passthrough, not client-side filtering
+  const pageDeals = computed(() => deals.value)
 
   // Checks whether a deal satisfies the currently active search query and filters.
   function dealMatchesCurrentFilters(deal: Deal): boolean {
@@ -121,6 +129,10 @@ export const useDealStore = defineStore('deals', () => {
     currentAbortController?.abort()
     currentAbortController = new AbortController()
     const { signal } = currentAbortController
+    // Snapshot the generation so the finally block can tell whether a newer
+    // call has superseded this one (including after the pagination retry
+    // replaces currentAbortController with a fresh controller).
+    const gen = ++loadDealsGeneration
 
     if (resetPage) page.value = 1
     loading.value = true
@@ -141,10 +153,17 @@ export const useDealStore = defineStore('deals', () => {
 
       let result = (await fetchDeals(params)) as DealsPage
 
-      // If the stored page exceeds totalPages, re-fetch from page 1
+      // If the stored page exceeds totalPages, re-fetch from page 1 with a fresh
+      // AbortController so the retry can be independently cancelled by future calls.
       if (result.totalPages > 0 && page.value > result.totalPages) {
         page.value = 1
-        result = (await fetchDeals({ ...params, page: 1 })) as DealsPage
+        const retryController = new AbortController()
+        currentAbortController = retryController
+        result = (await fetchDeals({
+          ...params,
+          page: 1,
+          signal: retryController.signal
+        })) as DealsPage
       }
 
       deals.value = result.deals
@@ -155,18 +174,27 @@ export const useDealStore = defineStore('deals', () => {
       error.value = e instanceof Error ? e.message : 'Failed to load deals'
       deals.value = []
     } finally {
-      loading.value = false
+      // Only clear the loading flag when this invocation is still the latest.
+      // A superseded call must not extinguish the active request's loading state.
+      if (gen === loadDealsGeneration) {
+        loading.value = false
+      }
     }
   }
 
   async function loadDealDetail(dealId: string): Promise<void> {
+    currentDetailAbortController?.abort()
+    const controller = new AbortController()
+    currentDetailAbortController = controller
+    const { signal } = controller
+
     detailLoading.value = true
     detailError.value = null
     detailNotFound.value = false
     currentDeal.value = null
 
     try {
-      const deal = (await fetchDealById(dealId)) as Deal | null
+      const deal = (await fetchDealById(dealId, signal)) as Deal | null
       currentDeal.value = deal
       detailNotFound.value = deal === null
       if (deal) {
@@ -174,9 +202,13 @@ export const useDealStore = defineStore('deals', () => {
         deals.value = deduplicateDeals([deal, ...deals.value]) as Deal[]
       }
     } catch (e: unknown) {
+      if (e instanceof DOMException && e.name === 'AbortError') return
       detailError.value = e instanceof Error ? e.message : 'Failed to load deal'
     } finally {
-      detailLoading.value = false
+      // Guard: a superseded request must not clear the active request's loading state.
+      if (currentDetailAbortController === controller) {
+        detailLoading.value = false
+      }
     }
   }
 
@@ -209,6 +241,16 @@ export const useDealStore = defineStore('deals', () => {
     loadDeals(true)
   }
 
+  function setStateFromUrl(params: {
+    search: string
+    page: number
+    filters: DealFilters
+  }): void {
+    searchQuery.value = params.search
+    page.value = params.page
+    filters.value = params.filters
+  }
+
   function setRole(role: string): void {
     currentRole.value = role
     clearAllCaches()
@@ -219,18 +261,36 @@ export const useDealStore = defineStore('deals', () => {
     stopPolling()
 
     const runPoll = async (): Promise<void> => {
+      if (isPollInFlight) return
+      isPollInFlight = true
       try {
         const updates = (await pollUpdates(lastPollTimestamp.value)) as Deal[]
         if (updates.length > 0) {
           lastPollTimestamp.value = new Date().toISOString()
-          // Only push updates that match the currently active filters
+
+          // Build a lookup of updated deals by id for O(1) access
+          const updatedById = new Map<string, Deal>(
+            updates.map((d) => [d.dealId, d])
+          )
+
+          // Remove deals that were updated but no longer match active filters
+          const afterEviction = deals.value.filter((d) => {
+            const updated = updatedById.get(d.dealId)
+            return updated === undefined || dealMatchesCurrentFilters(updated)
+          })
+
+          // Merge in updates that do match active filters
           const matching = updates.filter(dealMatchesCurrentFilters)
-          if (matching.length > 0) {
-            deals.value = mergeAndDeduplicate(deals.value, matching) as Deal[]
-          }
+          deals.value = (
+            matching.length > 0
+              ? mergeAndDeduplicate(afterEviction, matching)
+              : afterEviction
+          ) as Deal[]
         }
       } catch {
         // Silent fail for polling – non-critical
+      } finally {
+        isPollInFlight = false
       }
     }
 
@@ -283,7 +343,7 @@ export const useDealStore = defineStore('deals', () => {
     currentPartnerId,
     // Computed
     activeFilterCount,
-    filteredDeals,
+    pageDeals,
     // Actions
     loadDeals,
     loadDealDetail,
@@ -291,6 +351,7 @@ export const useDealStore = defineStore('deals', () => {
     setSearch,
     setFilters,
     clearFilters,
+    setStateFromUrl,
     setRole,
     startPolling,
     stopPolling

@@ -20,12 +20,6 @@ export function sanitizeSearchQuery(query: unknown): string {
     .replace(/javascript\s*:/gi, '')
     .replace(/data\s*:/gi, '')
     .replace(/on\w+\s*=/gi, '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/`/g, '&#x60;')
 }
 
 export function sanitizeNumericInput(

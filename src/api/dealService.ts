@@ -129,13 +129,14 @@ export async function fetchDeals({
   return result
 }
 
-export async function fetchDealById(dealId: string): Promise<Deal | null> {
+export async function fetchDealById(dealId: string, signal?: AbortSignal | null): Promise<Deal | null> {
   if (!isValidDealId(dealId)) return null
 
   const cached = detailCache.get(`deal:${dealId}`) as Deal | null
   if (cached) return cached
 
-  await simulateLatency()
+  await simulateLatency(signal)
+  if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
   maybeThrowError()
 
   const deals = deduplicateDeals([..._allDeals])

@@ -4,12 +4,16 @@ interface CacheEntry<T> {
   createdAt: number
 }
 
+const DEFAULT_MAX_SIZE = 100
+
 class CacheStore<T = unknown> {
   private _store = new Map<string, CacheEntry<T>>()
   private _defaultTTL: number
+  private _maxSize: number
 
-  constructor(defaultTTL = 60000) {
+  constructor(defaultTTL = 60000, maxSize = DEFAULT_MAX_SIZE) {
     this._defaultTTL = defaultTTL
+    this._maxSize = maxSize
   }
 
   get(key: string): T | null {
@@ -21,15 +25,28 @@ class CacheStore<T = unknown> {
       return null
     }
 
+    // Refresh insertion order so this entry is considered most-recently-used
+    this._store.delete(key)
+    this._store.set(key, entry)
+
     return entry.value
   }
 
   set(key: string, value: T, ttl?: number): void {
+    // Remove first to update position when key already exists
+    this._store.delete(key)
+
     this._store.set(key, {
       value,
       expiresAt: Date.now() + (ttl ?? this._defaultTTL),
       createdAt: Date.now()
     })
+
+    // Evict the least-recently-used entry when the store exceeds the size cap
+    if (this._store.size > this._maxSize) {
+      const lruKey = this._store.keys().next().value as string
+      this._store.delete(lruKey)
+    }
   }
 
   invalidate(key: string): void {
