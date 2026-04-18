@@ -80,13 +80,11 @@ If the app grew to include Partners, Reports, and Settings, each would get its o
 
 ### Current Bottlenecks
 
-| Bottleneck                       | Impact                                                                          | Severity | Mitigation Path                                                                                                       |
-| -------------------------------- | ------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
-| **Client-side filtering**        | With 10k+ records, filtering all data on every keystroke could lag              | Medium   | Move filtering to server; debounce already mitigates for current scale                                                |
-| **Full dataset in mock service** | The mock stores all 150+ deals in memory; a real API would paginate server-side | Low      | Service layer abstraction makes server-side pagination a drop-in                                                      |
-| **Polling frequency**            | 30s polling creates unnecessary requests when user is idle/tab is hidden        | Low      | Add `visibilitychange` listener to pause polling; use WebSocket for critical updates                                  |
-| **No request deduplication**     | Rapid filter changes can trigger multiple concurrent API calls                  | Medium   | Add request cancellation (AbortController) or a queue with latest-only semantics                                      |
-| **CSS-only responsive toggle**   | Both table and card HTML are rendered, only one is visible                      | Low      | Acceptable trade-off for simplicity; conditional rendering via `v-if` + media query composable would reduce DOM nodes |
+| Bottleneck                       | Impact                                                                                                                                                              | Severity | Mitigation Path                                                                                                                                                    |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Full dataset in mock service** | The mock stores all 150+ deals in memory; a real API would paginate server-side                                                                                     | Low      | Service layer abstraction makes server-side pagination a drop-in                                                                                                   |
+| **Filter logic duplication**     | `dealMatchesCurrentFilters` in `dealStore.ts` re-implements the same filter predicates as `dealService.ts`; a change to filter semantics must be applied in two places | Medium   | Extract a shared `matchesDealFilters(deal, filters, query)` pure function into `utils/` and import it from both sites                                              |
+| **Poll total drift**             | When polling evicts or injects deals in-place, `total` and `totalPages` are not recalculated; the pagination counter drifts from the visible list count             | Low      | Trigger a lightweight `loadDeals(false)` after any poll mutation that changes the list length, or recompute totals locally from the updated array                  |
 
 ### Technical Risks
 
@@ -96,7 +94,6 @@ If the app grew to include Partners, Reports, and Settings, each would get its o
 | **XSS via unsanitized filter values**     | Very Low    | Critical | All inputs pass through sanitization; Vue templates auto-escape; no `v-html` usage  |
 | **Stale data after network reconnection** | Medium      | Medium   | Polling auto-recovers; adding a "connection restored" refresh would be ideal        |
 | **i18n key mismatches**                   | Low         | Low      | Using typed keys and fallback locale (`en`) ensures graceful degradation            |
-| **Browser back/forward state loss**       | Medium      | Low      | Filter/search state is not in the URL; adding query param sync would preserve it    |
 
 ### Performance Considerations
 

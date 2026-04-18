@@ -31,8 +31,8 @@ npm run preview
 ```
 src/
 ├── api/              # API service layer & mock data generator
-│   ├── dealService.js    # Simulated REST API with caching, errors, pagination
-│   └── mockData.js       # Deterministic deal data generator
+│   ├── dealService.ts    # Simulated REST API with caching, errors, pagination
+│   └── mockData.ts       # Deterministic deal data generator
 ├── assets/           # Global CSS (design tokens, reset, animations)
 ├── components/       # Reusable UI components
 │   ├── AppHeader.vue     # Top bar with language & role switchers
@@ -42,28 +42,30 @@ src/
 │   ├── PaginationBar.vue # Page navigation with ellipsis logic
 │   ├── StatusBadge.vue   # Status indicator pill
 │   └── ErrorState.vue    # Error display with retry action
+├── composables/      # Reusable composition functions
+│   └── useIsMobile.ts    # Reactive mobile breakpoint detection
 ├── i18n/             # Internationalization
-│   ├── index.js          # vue-i18n setup
+│   ├── index.ts          # vue-i18n setup
 │   └── locales/          # en.json, ja.json, de.json, es.json
 ├── router/           # Vue Router config with route guards
 ├── stores/           # Pinia state management
-│   └── dealStore.js      # Central deal state, actions, polling
+│   └── dealStore.ts      # Central deal state, actions, polling
 ├── utils/            # Shared utilities
-│   ├── cache.js          # In-memory TTL cache
-│   ├── deduplication.js  # O(n) Map-based deduplication
-│   └── security.js       # XSS sanitization, RBAC, safe logging
+│   ├── cache.ts          # In-memory TTL cache
+│   ├── deduplication.ts  # O(n) Map-based deduplication
+│   └── security.ts       # Input sanitization, RBAC, safe logging
 ├── views/            # Route-level view components
 │   ├── DashboardView.vue # Deal list page
 │   └── DealDetailView.vue# Single deal detail page
 ├── App.vue           # Root component with layout shell
-└── main.js           # Application entry point
+└── main.ts           # Application entry point
 ```
 
 ### Key Architectural Decisions
 
 - **Composition API throughout** – all components use `<script setup>` for cleaner, more type-friendly code
 - **Pinia for state** – lightweight, TypeScript-native store; single `dealStore` handles all deal-related state
-- **Service layer pattern** – `dealService.js` abstracts data fetching, making it trivial to swap mock data for a real API
+- **Service layer pattern** – `dealService.ts` abstracts data fetching, making it trivial to swap mock data for a real API
 - **Component responsibility** – each component has a single, well-defined purpose; views compose components
 
 ---
@@ -86,17 +88,17 @@ Infinite scroll would be more suitable for feed-style content (social media, new
 
 ## Responsive Design Approach
 
-Three breakpoints are supported:
+Two primary breakpoints are used, with an additional CSS-only adjustment at 480px:
 
 | Breakpoint | Width   | Adaptation                                               |
 | ---------- | ------- | -------------------------------------------------------- |
-| Mobile     | ~360px  | Card layout for deals, stacked filters, reduced spacing  |
-| Tablet     | ~768px  | Card layout, simplified header, full filter panel        |
-| Desktop    | ~1280px | Full table layout, side-by-side filters, complete header |
+| Mobile     | ≤480px  | Stacked filters, reduced spacing, compact header         |
+| Tablet/mob | ≤768px  | Card layout for deals, simplified header                 |
+| Desktop    | >768px  | Full table layout, side-by-side filters, complete header |
 
 **Implementation details:**
 
-- The `DealTable` component renders **both** a `<table>` (desktop) and card list (mobile), toggled via CSS `display` rules — no JS re-rendering needed
+- The `DealTable` component renders either a `<table>` (desktop) or a card list (mobile) using `v-if`/`v-else` conditioned on the reactive `isMobile` ref returned by the `useIsMobile()` composable; this composable listens to `window.resize` and applies a 768px threshold — there are no duplicate hidden DOM nodes
 - CSS custom properties (`--space-*`) scale down at smaller breakpoints
 - Font size reduces from 15px (desktop) to 14px (tablet)
 - Filters collapse to single-column grid on mobile
@@ -120,7 +122,7 @@ Three breakpoints are supported:
 5. A language switcher dropdown in the header allows runtime switching
 6. The selected locale is reactive — all components re-render instantly
 
-**Adding a new language:** Create a new JSON file in `locales/`, import it in `i18n/index.js`, and add an entry to the language list in `AppHeader.vue`.
+**Adding a new language:** Create a new JSON file in `locales/`, import it in `i18n/index.ts`, and add an entry to the language list in `AppHeader.vue`.
 
 ---
 
@@ -132,6 +134,7 @@ Three breakpoints are supported:
 
 - Primary defence is Vue's template engine, which auto-escapes all bound values by default — `v-html` is never used with user-controlled data
 - `sanitizeSearchQuery()` normalises whitespace and enforces length limits for data hygiene; HTML escaping is intentionally left to Vue so that legitimate special characters (e.g. `&`, `<`) are not corrupted before string comparison
+- `sanitizeInput()` exists in `security.ts` but is **not called anywhere** in the codebase — it is dead code; the actual XSS protection comes entirely from Vue's auto-escaping
 - `isValidDealId()` validates URL route parameters against a strict pattern, preventing malformed IDs from reaching the API layer
 
 **2. Dependency Vulnerabilities**
@@ -174,7 +177,7 @@ Three breakpoints are supported:
 
 **Where caching is applied:**
 
-- In-memory `CacheStore` instances in `src/utils/cache.js`
+- In-memory `CacheStore` instances in `src/utils/cache.ts`
 - List cache: 60-second TTL
 - Detail cache: 5-minute TTL
 
@@ -205,7 +208,7 @@ Three breakpoints are supported:
 
 **Implementation:**
 
-- `pollUpdates()` in `dealService.js` simulates occasional deal changes
+- `pollUpdates()` in `dealService.ts` simulates occasional deal changes
 - Updates are merged into the current deal list using `mergeAndDeduplicate()`
 - Polling starts on dashboard mount, stops on unmount
 

@@ -6,7 +6,7 @@ interface CacheEntry<T> {
 
 const DEFAULT_MAX_SIZE = 100
 
-class CacheStore<T = unknown> {
+export class CacheStore<T = unknown> {
   private _store = new Map<string, CacheEntry<T>>()
   private _defaultTTL: number
   private _maxSize: number
