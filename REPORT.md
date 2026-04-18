@@ -95,7 +95,5 @@ Using `Intl.DateTimeFormat` and `Intl.NumberFormat` with the active locale ensur
 - **No unit/integration tests** — The project lacks automated test coverage; this is the highest-priority tech debt item
 - **Mock data only** — The service layer simulates an API; switching to a real backend would require adding proper HTTP client setup (axios/fetch), auth headers, and error mapping
 - **RBAC is cosmetic** — The role switcher filters data client-side; a real implementation must enforce permissions server-side
-- **URL state for filters is implemented** — Search query, active filters, and current page are all persisted in the URL query string via `syncToUrl` / `initFromUrl` in `DashboardView`. Refreshing the page or sharing the URL restores the exact view
 - **Translation quality** — Japanese, German, and Spanish translations are functional but should be reviewed by native speakers for production use
 - **No virtualization** — For datasets >1000 records, the table rendering could benefit from virtual scrolling (e.g., `vue-virtual-scroller`); pagination mitigates this for now
-- **Polling visibility optimisation is implemented** — `startPolling()` attaches a `visibilitychange` listener that pauses the interval when the tab is hidden and resumes it (with an immediate tick) when the tab becomes visible again, avoiding unnecessary requests while the app is backgrounded

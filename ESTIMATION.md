@@ -102,7 +102,14 @@ Estimates were derived using a combination of **analogous estimation** (based on
 | Route guard validation       | 0.25h          | High       | Router       |
 | Security documentation       | 0.5h           | High       | All          |
 
-### 10. Documentation
+### 10. Testing
+
+| Task                                  | Estimated Time | Confidence | Dependencies  |
+| ------------------------------------- | -------------- | ---------- | ------------- |
+| Manual QA — golden path (all views)   | 0.5h           | High       | All features  |
+| Responsive breakpoint testing         | 0.25h          | Medium     | All components |
+
+### 11. Documentation
 
 | Task          | Estimated Time | Confidence | Dependencies     |
 | ------------- | -------------- | ---------- | ---------------- |
@@ -117,19 +124,20 @@ Estimates were derived using a combination of **analogous estimation** (based on
 
 | Category                     | Estimated Total |
 | ---------------------------- | --------------- |
-| Project Setup & Architecture | 3.5h            |
-| API & Data Layer             | 5.5h            |
-| UI Development               | 12.75h          |
-| Search Implementation        | 2h              |
-| Filtering                    | 2.75h           |
-| Deduplication Logic          | 1.25h           |
-| Responsive Design            | 4h              |
-| Internationalization         | 4.25h           |
-| Security Review              | 2.25h           |
-| Documentation                | 4.25h           |
-| **Grand Total**              | **~42.5h**      |
+| Project Setup & Architecture | 0.5h            |
+| API & Data Layer             | 1h              |
+| UI Development               | 2.5h            |
+| Search Implementation        | 0.5h            |
+| Filtering                    | 0.5h            |
+| Deduplication Logic          | 0.25h           |
+| Responsive Design            | 0.75h           |
+| Internationalization         | 1h              |
+| Security Review              | 0.5h            |
+| Testing                      | 0.75h           |
+| Documentation                | 0.75h           |
+| **Grand Total**              | **~9h**         |
 
-With a realistic 6-8h/day work schedule, this fits within the **2-3 day** window (2.5 days at 8h/day or 3 days at ~6h focused work).
+With a focused single-day effort, this fits comfortably within a **1-day** window (~9h including testing and documentation).
 
 ---
 
@@ -151,4 +159,4 @@ With a realistic 6-8h/day work schedule, this fits within the **2-3 day** window
 | Responsive edge cases                | Medium     | Medium | Test at exact breakpoints; use CSS custom properties for flexibility         |
 | Filter combination edge cases        | Low        | Medium | Thorough testing of filter intersections; defensive null checks              |
 | Mock API diverges from real patterns | Low        | Low    | Service layer abstraction makes real API integration straightforward         |
-| Scope creep on optional AI features  | Medium     | Medium | Time-box to 2h maximum; skip if core features not complete                   |
+| Optional AI feature (smart tagging)  | Medium     | Medium | Was time-boxed to 2h; **deferred** — core features consumed available time; moved to "What I Would Improve With One More Day" |
