@@ -130,9 +130,9 @@ Three breakpoints are supported:
 
 **1. Cross-Site Scripting (XSS)**
 
-- All user input is sanitized via `sanitizeInput()` and `sanitizeSearchQuery()` before processing
-- Vue's template system auto-escapes by default — we never use `v-html` with user data
-- Search queries are stripped of `< > ' "` characters and length-limited
+- Primary defence is Vue's template engine, which auto-escapes all bound values by default — `v-html` is never used with user-controlled data
+- `sanitizeSearchQuery()` normalises whitespace and enforces length limits for data hygiene; HTML escaping is intentionally left to Vue so that legitimate special characters (e.g. `&`, `<`) are not corrupted before string comparison
+- `isValidDealId()` validates URL route parameters against a strict pattern, preventing malformed IDs from reaching the API layer
 
 **2. Dependency Vulnerabilities**
 
@@ -142,8 +142,8 @@ Three breakpoints are supported:
 
 **3. Sensitive Data Leakage**
 
-- `safeLog()` utility redacts fields like `contactEmail`, `token`, `password` before console output
-- Production mode suppresses all debug logging
+- `safeLog()` is integrated into the service layer (`dealService.ts`) and store error handlers (`dealStore.ts`), actively redacting fields like `contactEmail`, `token`, and `password` before any console output
+- Production mode suppresses all debug logging entirely (`import.meta.env.PROD` guard inside `safeLog`)
 - No sensitive data stored in localStorage or sessionStorage
 
 **4. Improper Error Handling**
@@ -154,9 +154,8 @@ Three breakpoints are supported:
 
 **5. Token Storage / Auth Issues**
 
-- RBAC simulation is clearly documented as frontend-only (UX purposes)
-- Comment in code explicitly states server-side enforcement is required
-- Route guards validate deal ID format (`isValidDealId()`) to prevent injection via URL params
+- Authentication is not implemented — no tokens are issued, stored, or transmitted; there is nothing to steal from the browser
+- RBAC simulation is frontend-only for UX demonstration; comments explicitly note that real enforcement must happen server-side
 
 ### Additional Security Measures
 

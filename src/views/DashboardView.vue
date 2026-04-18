@@ -127,7 +127,7 @@
     <div class="dashboard__content">
       <ErrorState
         v-if="store.error"
-        :message="store.error"
+        :message="t('errors.fetchFailed')"
         @retry="store.loadDeals()" />
 
       <template v-else>

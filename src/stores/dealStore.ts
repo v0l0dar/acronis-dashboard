@@ -6,7 +6,7 @@ import {
   pollUpdates,
   clearAllCaches
 } from '../api/dealService'
-import { ROLES } from '../utils/security'
+import { ROLES, safeLog } from '../utils/security'
 import { deduplicateDeals, mergeAndDeduplicate } from '../utils/deduplication'
 import type { Deal, DealFilters, DealsPage } from '../types'
 
@@ -171,7 +171,8 @@ export const useDealStore = defineStore('deals', () => {
       totalPages.value = result.totalPages
     } catch (e: unknown) {
       if (e instanceof DOMException && e.name === 'AbortError') return
-      error.value = e instanceof Error ? e.message : 'Failed to load deals'
+      safeLog('loadDeals:error', e instanceof Error ? { name: e.name, message: e.message } : { message: String(e) })
+      error.value = 'error'
       deals.value = []
     } finally {
       // Only clear the loading flag when this invocation is still the latest.
@@ -203,6 +204,7 @@ export const useDealStore = defineStore('deals', () => {
       }
     } catch (e: unknown) {
       if (e instanceof DOMException && e.name === 'AbortError') return
+      safeLog('loadDealDetail:error', e instanceof Error ? { name: e.name, message: e.message } : { message: String(e) })
       detailError.value = e instanceof Error ? e.message : 'Failed to load deal'
     } finally {
       // Guard: a superseded request must not clear the active request's loading state.

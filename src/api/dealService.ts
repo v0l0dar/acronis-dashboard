@@ -2,9 +2,9 @@ import type { Deal, DealsPage, DealFilters, RoleFilter } from '../types'
 import { generateDeals, injectDuplicates } from './mockData'
 import { listCache, detailCache } from '../utils/cache'
 import { deduplicateDeals } from '../utils/deduplication'
-import { filterDealsByRole, isValidDealId } from '../utils/security'
+import { filterDealsByRole, isValidDealId, safeLog } from '../utils/security'
 
-let _allDeals = injectDuplicates(generateDeals(150, 42), 10)
+const _allDeals = injectDuplicates(generateDeals(150, 42), 10)
 
 const ERROR_RATE = 0.05
 const LATENCY_MIN = 200
@@ -66,6 +66,7 @@ export async function fetchDeals({
   const cached = listCache.get(cacheKey) as DealsPage | null
   if (cached) return cached
 
+  safeLog('fetchDeals', { page, pageSize, search, filters, roleFilter })
   await simulateLatency(signal)
   if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
   maybeThrowError()
@@ -135,6 +136,7 @@ export async function fetchDealById(dealId: string, signal?: AbortSignal | null)
   const cached = detailCache.get(`deal:${dealId}`) as Deal | null
   if (cached) return cached
 
+  safeLog('fetchDealById', { dealId })
   await simulateLatency(signal)
   if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
   maybeThrowError()

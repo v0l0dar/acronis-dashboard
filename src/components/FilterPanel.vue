@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, computed, watch } from 'vue'
+  import { ref, computed, watch, onUnmounted } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { sanitizeSearchQuery, sanitizeNumericInput } from '../utils/security'
   import type { DealFilters } from '../types'
@@ -33,6 +33,12 @@
   )
   const localAccountName = ref<string>(filters.accountName)
   const localDealName = ref<string>(filters.dealName)
+
+  let textDebounceTimer: ReturnType<typeof setTimeout> | null = null
+
+  onUnmounted(() => {
+    if (textDebounceTimer !== null) clearTimeout(textDebounceTimer)
+  })
 
   watch(
     () => filters,
@@ -95,6 +101,11 @@
       accountName: sanitizeSearchQuery(localAccountName.value) as string,
       dealName: sanitizeSearchQuery(localDealName.value) as string
     })
+  }
+
+  function applyFiltersDebounced(): void {
+    if (textDebounceTimer !== null) clearTimeout(textDebounceTimer)
+    textDebounceTimer = setTimeout(applyFilters, 300)
   }
 
   function clearAll(): void {
@@ -228,7 +239,7 @@
               class="filter-input"
               :placeholder="t('filters.accountName')"
               maxlength="100"
-              @input="applyFilters" />
+              @input="applyFiltersDebounced" />
           </div>
 
           <!-- Deal name text filter -->
@@ -240,7 +251,7 @@
               class="filter-input"
               :placeholder="t('filters.dealName')"
               maxlength="100"
-              @input="applyFilters" />
+              @input="applyFiltersDebounced" />
           </div>
         </div>
       </div>
