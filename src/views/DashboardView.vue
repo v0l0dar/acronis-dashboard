@@ -6,6 +6,7 @@
   import { isValidDealStatus } from '../utils/security'
   import type { DealFilters } from '../types'
   import SearchBar from '../components/SearchBar.vue'
+  import type { SmartSearchResult } from '../utils/smartSearchParser'
   import FilterPanel from '../components/FilterPanel.vue'
   import DealTable from '../components/DealTable.vue'
   import PaginationBar from '../components/PaginationBar.vue'
@@ -88,6 +89,28 @@
     store.setSearch(q)
   }
 
+  function onSmartSearch(result: SmartSearchResult): void {
+    if (!result.isStructured) {
+      store.setFilters({
+        statuses: [],
+        amountMin: null,
+        amountMax: null,
+        dateFrom: '',
+        dateTo: '',
+      })
+      store.setSearch('')
+      return
+    }
+    store.setFilters({
+      statuses: result.filters.statuses ?? [],
+      amountMin: result.filters.amountMin ?? null,
+      amountMax: result.filters.amountMax ?? null,
+      dateFrom: result.filters.dateFrom ?? '',
+      dateTo: result.filters.dateTo ?? '',
+    })
+    store.setSearch(result.residualQuery)
+  }
+
   function onFilterUpdate(f: Partial<DealFilters>): void {
     store.setFilters(f)
   }
@@ -115,7 +138,10 @@
     </div>
 
     <div class="dashboard__toolbar">
-      <SearchBar :model-value="store.searchQuery" @search="onSearch" />
+      <SearchBar
+          :model-value="store.searchQuery"
+          @search="onSearch"
+          @smart-search="onSmartSearch" />
     </div>
 
     <FilterPanel
