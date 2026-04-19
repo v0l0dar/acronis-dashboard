@@ -13,7 +13,7 @@ Views → Components → Stores → Services → Data
 **Why this approach:**
 
 - **Separation of concerns** — Each layer has a clear responsibility. Views compose components. Components render UI and emit events. Stores manage state and coordinate side effects. Services handle data access and transformation.
-- **Testability** — The service layer (`dealService.js`) and utility modules (`deduplication.js`, `security.js`, `cache.js`) are pure functions with no framework dependencies. They can be unit tested without Vue's test utilities.
+- **Testability** — The service layer (`dealService.ts`) and utility modules (`deduplication.ts`, `security.ts`, `cache.ts`) are pure functions with no framework dependencies. They can be unit tested without Vue's test utilities.
 - **Swappability** — The mock service layer has the same interface a real API client would have. Transitioning to a real backend requires changing only the service layer — no component or store changes needed.
 - **Scalability** — New features (e.g., a "Partners" section) can follow the same pattern: add a service, store, and view without touching existing code.
 
@@ -80,11 +80,11 @@ If the app grew to include Partners, Reports, and Settings, each would get its o
 
 ### Current Bottlenecks
 
-| Bottleneck                       | Impact                                                                                                                                                              | Severity | Mitigation Path                                                                                                                                                    |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Full dataset in mock service** | The mock stores all 150+ deals in memory; a real API would paginate server-side                                                                                     | Low      | Service layer abstraction makes server-side pagination a drop-in                                                                                                   |
-| **Filter logic duplication**     | `dealMatchesCurrentFilters` in `dealStore.ts` re-implements the same filter predicates as `dealService.ts`; a change to filter semantics must be applied in two places | Medium   | Extract a shared `matchesDealFilters(deal, filters, query)` pure function into `utils/` and import it from both sites                                              |
-| **Poll total drift**             | When polling evicts or injects deals in-place, `total` and `totalPages` are not recalculated; the pagination counter drifts from the visible list count             | Low      | Trigger a lightweight `loadDeals(false)` after any poll mutation that changes the list length, or recompute totals locally from the updated array                  |
+| Bottleneck                       | Impact                                                                                                                                                                 | Severity | Mitigation Path                                                                                                                                   |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Full dataset in mock service** | The mock stores all 150+ deals in memory; a real API would paginate server-side                                                                                        | Low      | Service layer abstraction makes server-side pagination a drop-in                                                                                  |
+| **Filter logic duplication**     | `dealMatchesCurrentFilters` in `dealStore.ts` re-implements the same filter predicates as `dealService.ts`; a change to filter semantics must be applied in two places | Medium   | Extract a shared `matchesDealFilters(deal, filters, query)` pure function into `utils/` and import it from both sites                             |
+| **Poll total drift**             | When polling evicts or injects deals in-place, `total` and `totalPages` are not recalculated; the pagination counter drifts from the visible list count                | Low      | Trigger a lightweight `loadDeals(false)` after any poll mutation that changes the list length, or recompute totals locally from the updated array |
 
 ### Technical Risks
 

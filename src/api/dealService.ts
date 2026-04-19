@@ -4,9 +4,10 @@ import { listCache, detailCache } from '../utils/cache'
 import { deduplicateDeals } from '../utils/deduplication'
 import { filterDealsByRole, isValidDealId, safeLog } from '../utils/security'
 
-const _allDeals = injectDuplicates(generateDeals(150, 42), 10)
+const _allDeals = injectDuplicates(generateDeals(150, 42), 10, 99)
 
 const ERROR_RATE = 0.05
+const TIMEOUT_RATE = 0.03
 const LATENCY_MIN = 200
 const LATENCY_MAX = 800
 
@@ -36,11 +37,24 @@ interface ApiError extends Error {
   status: number
 }
 
+export class TimeoutError extends Error {
+  constructor(message = 'Request timed out') {
+    super(message)
+    this.name = 'TimeoutError'
+  }
+}
+
 function maybeThrowError(): void {
   if (Math.random() < ERROR_RATE) {
     const error = new Error('Internal Server Error') as ApiError
     error.status = 500
     throw error
+  }
+}
+
+function maybeThrowTimeout(): void {
+  if (Math.random() < TIMEOUT_RATE) {
+    throw new TimeoutError()
   }
 }
 
@@ -69,6 +83,7 @@ export async function fetchDeals({
   safeLog('fetchDeals', { page, pageSize, search, filters, roleFilter })
   await simulateLatency(signal)
   if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
+  maybeThrowTimeout()
   maybeThrowError()
 
   let deals = deduplicateDeals([..._allDeals])
@@ -139,6 +154,7 @@ export async function fetchDealById(dealId: string, signal?: AbortSignal | null)
   safeLog('fetchDealById', { dealId })
   await simulateLatency(signal)
   if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
+  maybeThrowTimeout()
   maybeThrowError()
 
   const deals = deduplicateDeals([..._allDeals])

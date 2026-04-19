@@ -2,12 +2,16 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import type { DealsPage, Deal } from '../types'
 
-vi.mock('../api/dealService', () => ({
-  fetchDeals: vi.fn(),
-  fetchDealById: vi.fn(),
-  pollUpdates: vi.fn(),
-  clearAllCaches: vi.fn(),
-}))
+vi.mock('../api/dealService', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../api/dealService')>()
+  return {
+    ...actual,
+    fetchDeals: vi.fn(),
+    fetchDealById: vi.fn(),
+    pollUpdates: vi.fn(),
+    clearAllCaches: vi.fn(),
+  }
+})
 
 import { fetchDeals, fetchDealById, clearAllCaches } from '../api/dealService'
 import { useDealStore } from './dealStore'

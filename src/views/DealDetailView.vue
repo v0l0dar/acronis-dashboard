@@ -106,7 +106,7 @@
     <!-- Server error -->
     <ErrorState
       v-else-if="store.detailError"
-      :message="t('errors.detailFailed')"
+      :message="store.detailError === 'timeout' ? t('errors.timeout') : t('errors.detailFailed')"
       @retry="store.loadDealDetail(dealId)" />
 
     <!-- Content -->

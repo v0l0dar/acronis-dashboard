@@ -104,10 +104,10 @@ Estimates were derived using a combination of **analogous estimation** (based on
 
 ### 10. Testing
 
-| Task                                  | Estimated Time | Confidence | Dependencies  |
-| ------------------------------------- | -------------- | ---------- | ------------- |
-| Manual QA — golden path (all views)   | 0.5h           | High       | All features  |
-| Responsive breakpoint testing         | 0.25h          | Medium     | All components |
+| Task                                | Estimated Time | Confidence | Dependencies   |
+| ----------------------------------- | -------------- | ---------- | -------------- |
+| Manual QA — golden path (all views) | 0.5h           | High       | All features   |
+| Responsive breakpoint testing       | 0.25h          | Medium     | All components |
 
 ### 11. Documentation
 
@@ -153,10 +153,10 @@ With a focused single-day effort, this fits comfortably within a **1-day** windo
 
 ## Risks
 
-| Risk                                 | Likelihood | Impact | Mitigation                                                                   |
-| ------------------------------------ | ---------- | ------ | ---------------------------------------------------------------------------- |
-| i18n translation accuracy            | Medium     | Low    | Use professional review for production; mark as "best-effort" for assignment |
-| Responsive edge cases                | Medium     | Medium | Test at exact breakpoints; use CSS custom properties for flexibility         |
-| Filter combination edge cases        | Low        | Medium | Thorough testing of filter intersections; defensive null checks              |
-| Mock API diverges from real patterns | Low        | Low    | Service layer abstraction makes real API integration straightforward         |
+| Risk                                 | Likelihood | Impact | Mitigation                                                                                                                    |
+| ------------------------------------ | ---------- | ------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| i18n translation accuracy            | Medium     | Low    | Use professional review for production; mark as "best-effort" for assignment                                                  |
+| Responsive edge cases                | Medium     | Medium | Test at exact breakpoints; use CSS custom properties for flexibility                                                          |
+| Filter combination edge cases        | Low        | Medium | Thorough testing of filter intersections; defensive null checks                                                               |
+| Mock API diverges from real patterns | Low        | Low    | Service layer abstraction makes real API integration straightforward                                                          |
 | Optional AI feature (smart tagging)  | Medium     | Medium | Was time-boxed to 2h; **deferred** — core features consumed available time; moved to "What I Would Improve With One More Day" |

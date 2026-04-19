@@ -2,43 +2,43 @@
 
 ## Planned vs Actual Time Spent
 
-| #   | Task                                                  | Planned    | Actual   | Delta     | Notes                                             |
-| --- | ----------------------------------------------------- | ---------- | -------- | --------- | ------------------------------------------------- |
-| 1   | Vite + Vue 3 project scaffolding                      | 0.5h       | 0.25h    | -0.25h    | Template generation faster than expected          |
-| 2   | TypeScript config & path aliases                      | 0.5h       | 0.5h     | 0h        | Straightforward tsconfig setup                    |
-| 3   | Pinia store skeleton & router setup                   | 1h         | 0.75h    | -0.25h    | Composition API store is concise                  |
-| 4   | ESLint + Prettier configuration                       | 0.5h       | 0.5h     | 0h        | Flat config format took a moment to learn         |
-| 5   | Mock data generator (150 deals, seeded)               | 1.5h       | 1.25h    | -0.25h    | Deterministic seeding simplified debugging        |
-| 6   | `injectDuplicates` helper for test data               | 0.5h       | 0.5h     | 0h        | Required for deduplication smoke testing          |
-| 7   | `fetchDeals` — pagination + search + filters          | 2h         | 2h       | 0h        | Filter combinations needed careful ordering       |
-| 8   | `fetchDealById` — single record fetch                 | 0.5h       | 0.5h     | 0h        | Cache key per ID, null for invalid IDs            |
-| 9   | `pollUpdates` — simulated real-time updates           | 1h         | 0.75h    | -0.25h    | Random mutation logic was simple                  |
+| #   | Task                                                  | Planned    | Actual   | Delta     | Notes                                                                     |
+| --- | ----------------------------------------------------- | ---------- | -------- | --------- | ------------------------------------------------------------------------- |
+| 1   | Vite + Vue 3 project scaffolding                      | 0.5h       | 0.25h    | -0.25h    | Template generation faster than expected                                  |
+| 2   | TypeScript config & path aliases                      | 0.5h       | 0.5h     | 0h        | Straightforward tsconfig setup                                            |
+| 3   | Pinia store skeleton & router setup                   | 1h         | 0.75h    | -0.25h    | Composition API store is concise                                          |
+| 4   | ESLint + Prettier configuration                       | 0.5h       | 0.5h     | 0h        | Flat config format took a moment to learn                                 |
+| 5   | Mock data generator (150 deals, seeded)               | 1.5h       | 1.25h    | -0.25h    | Deterministic seeding simplified debugging                                |
+| 6   | `injectDuplicates` helper for test data               | 0.5h       | 0.5h     | 0h        | Required for deduplication smoke testing                                  |
+| 7   | `fetchDeals` — pagination + search + filters          | 2h         | 2h       | 0h        | Filter combinations needed careful ordering                               |
+| 8   | `fetchDealById` — single record fetch                 | 0.5h       | 0.5h     | 0h        | Cache key per ID, null for invalid IDs                                    |
+| 9   | `pollUpdates` — simulated real-time updates           | 1h         | 0.75h    | -0.25h    | Random mutation logic was simple                                          |
 | 10  | In-memory cache utility                               | 1h         | 1.25h    | +0.25h    | TTL-based initially; LRU eviction (max 100 entries) added during refactor |
-| 11  | `DashboardView` — layout & table shell                | 1.5h       | 1.5h     | 0h        | CSS Grid layout for sidebar + main                |
-| 12  | `DealTable` — desktop table + mobile cards            | 2.5h       | 3h       | +0.5h     | Dual-render approach required extra CSS work      |
-| 13  | `DealDetailView` — detail page                        | 1.5h       | 1.5h     | 0h        | Two-column layout, back navigation                |
-| 14  | `StatusBadge` component                               | 0.5h       | 0.25h    | -0.25h    | Simple pill component                             |
-| 15  | `PaginationBar` component                             | 1h         | 1h       | 0h        | Page window calculation took iteration            |
-| 16  | `AppHeader` — role switcher + i18n toggle             | 1.25h      | 1.25h    | 0h        | Dropdown interactions needed polish               |
-| 17  | `SearchBar` — debounce + XSS sanitization             | 1h         | 0.75h    | -0.25h    | `perfect-debounce` made this straightforward      |
-| 18  | `FilterPanel` — multi-type filters                    | 1.75h      | 2.25h    | +0.5h     | Numeric + date + status combined state was tricky |
-| 19  | `ErrorState` component                                | 0.5h       | 0.5h     | 0h        | Reusable across list and detail views             |
-| 20  | `deduplicateDeals` — Map-based O(n) dedup             | 0.75h      | 0.5h     | -0.25h    | Clean algorithm, well-tested mentally             |
-| 21  | `mergeAndDeduplicate` for poll merging                | 0.5h       | 0.5h     | 0h        | Thin wrapper over `deduplicateDeals`              |
-| 22  | Store: dedup on `loadDealDetail` (sync to list)       | 0.25h      | 0.25h    | 0h        | Prevents stale entries after detail fetch         |
-| 23  | Responsive breakpoints & mobile layout                | 2h         | 2.5h     | +0.5h     | Card layout fine-tuning on small screens          |
-| 24  | CSS custom properties & design tokens                 | 1h         | 1h       | 0h        | Earthy palette + DM Sans / JetBrains Mono         |
-| 25  | Accessibility: ARIA labels & focus states             | 1h         | 1h       | 0h        | Keyboard navigation for table + filter panel      |
-| 26  | vue-i18n setup & locale switching                     | 1h         | 1h       | 0h        | Composition API mode, runtime-only bundle         |
-| 27  | EN / DE / ES / JA translation files                   | 2.5h       | 2.25h    | -0.25h    | Japanese date format required `Intl` override     |
-| 28  | `Intl.DateTimeFormat` / `NumberFormat` per locale     | 0.75h      | 0.75h    | 0h        | Locale-aware currency + date formatting           |
-| 29  | `security.js` — input sanitization & RBAC utils       | 1.25h      | 1h       | -0.25h    | Modular helpers reused across service layer       |
-| 30  | Role-based data filtering (Admin / Manager / Partner) | 1h         | 1h       | 0h        | Client-side only; flagged as known limitation     |
-| 31  | README.md — setup, architecture, decisions            | 2h         | 2h       | 0h        | Written alongside implementation                  |
-| 32  | DECISIONS.md + ESTIMATION.md                          | 1h         | 1h       | 0h        | Structured rationale for key trade-offs           |
-| 33  | REPORT.md — this document                             | 0.75h      | 0.75h    | 0h        | Filled in retrospectively                         |
-| 34  | Manual QA — golden path + edge cases                  | 1h         | 1h       | 0h        | Filter combos, pagination edges, locale switch    |
-|     | **Total**                                             | **~42.5h** | **~41h** | **-1.5h** | Slightly under estimate; no major surprises       |
+| 11  | `DashboardView` — layout & table shell                | 1.5h       | 1.5h     | 0h        | CSS Grid layout for sidebar + main                                        |
+| 12  | `DealTable` — desktop table + mobile cards            | 2.5h       | 3h       | +0.5h     | Dual-render approach required extra CSS work                              |
+| 13  | `DealDetailView` — detail page                        | 1.5h       | 1.5h     | 0h        | Two-column layout, back navigation                                        |
+| 14  | `StatusBadge` component                               | 0.5h       | 0.25h    | -0.25h    | Simple pill component                                                     |
+| 15  | `PaginationBar` component                             | 1h         | 1h       | 0h        | Page window calculation took iteration                                    |
+| 16  | `AppHeader` — role switcher + i18n toggle             | 1.25h      | 1.25h    | 0h        | Dropdown interactions needed polish                                       |
+| 17  | `SearchBar` — debounce + XSS sanitization             | 1h         | 0.75h    | -0.25h    | Native `setTimeout` debounce; no external package needed                  |
+| 18  | `FilterPanel` — multi-type filters                    | 1.75h      | 2.25h    | +0.5h     | Numeric + date + status combined state was tricky                         |
+| 19  | `ErrorState` component                                | 0.5h       | 0.5h     | 0h        | Reusable across list and detail views                                     |
+| 20  | `deduplicateDeals` — Map-based O(n) dedup             | 0.75h      | 0.5h     | -0.25h    | Clean algorithm, well-tested mentally                                     |
+| 21  | `mergeAndDeduplicate` for poll merging                | 0.5h       | 0.5h     | 0h        | Thin wrapper over `deduplicateDeals`                                      |
+| 22  | Store: dedup on `loadDealDetail` (sync to list)       | 0.25h      | 0.25h    | 0h        | Prevents stale entries after detail fetch                                 |
+| 23  | Responsive breakpoints & mobile layout                | 2h         | 2.5h     | +0.5h     | Card layout fine-tuning on small screens                                  |
+| 24  | CSS custom properties & design tokens                 | 1h         | 1h       | 0h        | Earthy palette + DM Sans / JetBrains Mono                                 |
+| 25  | Accessibility: ARIA labels & focus states             | 1h         | 1h       | 0h        | Keyboard navigation for table + filter panel                              |
+| 26  | vue-i18n setup & locale switching                     | 1h         | 1h       | 0h        | Composition API mode, runtime-only bundle                                 |
+| 27  | EN / DE / ES / JA translation files                   | 2.5h       | 2.25h    | -0.25h    | Japanese date format required `Intl` override                             |
+| 28  | `Intl.DateTimeFormat` / `NumberFormat` per locale     | 0.75h      | 0.75h    | 0h        | Locale-aware currency + date formatting                                   |
+| 29  | `security.ts` — input sanitization & RBAC utils       | 1.25h      | 1h       | -0.25h    | Modular helpers reused across service layer                               |
+| 30  | Role-based data filtering (Admin / Partner)           | 1h         | 1h       | 0h        | Client-side only; flagged as known limitation                             |
+| 31  | README.md — setup, architecture, decisions            | 2h         | 2h       | 0h        | Written alongside implementation                                          |
+| 32  | DECISIONS.md + ESTIMATION.md                          | 1h         | 1h       | 0h        | Structured rationale for key trade-offs                                   |
+| 33  | REPORT.md — this document                             | 0.75h      | 0.75h    | 0h        | Filled in retrospectively                                                 |
+| 34  | Manual QA — golden path + edge cases                  | 1h         | 1h       | 0h        | Filter combos, pagination edges, locale switch                            |
+|     | **Total**                                             | **~42.5h** | **~41h** | **-1.5h** | Slightly under estimate; no major surprises                               |
 
 ---
 
@@ -81,7 +81,7 @@ Using `Intl.DateTimeFormat` and `Intl.NumberFormat` with the active locale ensur
 
 ## What I Would Improve With One More Day
 
-1. **Unit tests** — Add Vitest tests for `deduplication.js`, `security.js`, `cache.js`, and key component behaviors (search debounce, filter combination, pagination edge cases)
+1. **Unit tests** — Add Vitest tests for `deduplication.ts`, `security.ts`, `cache.ts`, and key component behaviors (search debounce, filter combination, pagination edge cases)
 2. **E2E tests** — Cypress or Playwright tests for the full user flow: search → filter → paginate → view detail → go back
 3. **Accessibility audit** — While basic keyboard navigation and ARIA labels are in place, a full audit with axe-core would catch edge cases
 4. **Optional AI feature** — Implement a rule-based "smart tagging" system that automatically labels deals as "High Value" (>$100k), "Stale" (>90 days old, still Open), or "Recently Created" (<7 days)

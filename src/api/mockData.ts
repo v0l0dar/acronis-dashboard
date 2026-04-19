@@ -69,10 +69,11 @@ export function generateDeals(count = 150, seed = 42): Deal[] {
   return Array.from({ length: count }, (_, i) => generateDeal(i, rand))
 }
 
-export function injectDuplicates(deals: Deal[], dupeCount = 8): Deal[] {
+export function injectDuplicates(deals: Deal[], dupeCount = 8, seed = 99): Deal[] {
+  const rand = seededRandom(seed)
   const dupes: Deal[] = []
   for (let i = 0; i < dupeCount; i++) {
-    const original = deals[Math.floor(Math.random() * deals.length)]
+    const original = deals[Math.floor(rand() * deals.length)]
     dupes.push({
       ...original,
       updatedDate: new Date(

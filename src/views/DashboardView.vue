@@ -153,7 +153,7 @@
     <div class="dashboard__content">
       <ErrorState
         v-if="store.error"
-        :message="t('errors.fetchFailed')"
+        :message="store.error === 'timeout' ? t('errors.timeout') : t('errors.fetchFailed')"
         @retry="store.loadDeals()" />
 
       <template v-else>
