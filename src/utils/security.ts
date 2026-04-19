@@ -1,3 +1,5 @@
+import type { DealStatus } from '../types'
+
 export function sanitizeInput(input: unknown): string {
   if (typeof input !== 'string') return ''
   // Strip null bytes only. HTML escaping is Vue's responsibility at render time.
@@ -48,8 +50,11 @@ export function safeLog(label: string, data: unknown): void {
   }
 }
 
-export const VALID_DEAL_STATUSES = ['Open', 'Approved', 'Rejected'] as const
-export type DealStatus = (typeof VALID_DEAL_STATUSES)[number]
+export const VALID_DEAL_STATUSES: readonly DealStatus[] = [
+  'Open',
+  'Approved',
+  'Rejected'
+]
 
 export function isValidDealStatus(value: string): value is DealStatus {
   return (VALID_DEAL_STATUSES as readonly string[]).includes(value)
@@ -75,4 +80,11 @@ export function filterDealsByRole<T extends { assignedTo: string }>(
 
 export function isValidDealId(id: unknown): id is string {
   return typeof id === 'string' && /^DEAL-\d{4,6}$/.test(id)
+}
+
+export function isValidEmail(value: unknown): value is string {
+  if (typeof value !== 'string') return false
+  // RFC 5321 practical limit is 254 chars; reject anything longer
+  if (value.length > 254) return false
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 }

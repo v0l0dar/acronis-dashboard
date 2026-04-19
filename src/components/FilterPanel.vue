@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import { ref, computed, watch, onUnmounted } from 'vue'
+  import { ref, computed, watch, onUnmounted, useId } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { sanitizeSearchQuery, sanitizeNumericInput } from '../utils/security'
-  import type { DealFilters } from '../types'
+  import type { DealFilters, DealStatus } from '../types'
 
   const { t } = useI18n()
   const emit = defineEmits<{
@@ -16,9 +16,10 @@
   }>()
 
   const isOpen = ref(false)
+  const panelBodyId = useId()
 
   // Local copies for controlled inputs
-  const localStatuses = ref<string[]>([...filters.statuses])
+  const localStatuses = ref<DealStatus[]>([...filters.statuses])
   const localAmountMin = ref<string>(
     filters.amountMin != null ? String(filters.amountMin) : ''
   )
@@ -55,7 +56,7 @@
     { deep: true }
   )
 
-  const statusOptions: string[] = ['Open', 'Approved', 'Rejected']
+  const statusOptions: DealStatus[] = ['Open', 'Approved', 'Rejected']
 
   // Reactive validation
   const amountError = computed<string>(() => {
@@ -72,7 +73,7 @@
       : ''
   })
 
-  function toggleStatus(status: string): void {
+  function toggleStatus(status: DealStatus): void {
     const idx = localStatuses.value.indexOf(status)
     if (idx === -1) localStatuses.value.push(status)
     else localStatuses.value.splice(idx, 1)
@@ -119,7 +120,7 @@
     emit('clear')
   }
 
-  function statusColorClass(status: string): string {
+  function statusColorClass(status: DealStatus): string {
     return `status--${status.toLowerCase()}`
   }
 </script>
@@ -127,7 +128,11 @@
 <template>
   <div class="filter-panel">
     <div class="filter-panel__header">
-      <button class="filter-toggle" @click="isOpen = !isOpen">
+      <button
+        class="filter-toggle"
+        :aria-expanded="isOpen"
+        :aria-controls="panelBodyId"
+        @click="isOpen = !isOpen">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path
             d="M2 4h12M4 8h8M6 12h4"
@@ -160,7 +165,7 @@
     </div>
 
     <transition name="fade">
-      <div v-if="isOpen" class="filter-panel__body">
+      <div v-if="isOpen" :id="panelBodyId" class="filter-panel__body">
         <div class="filter-grid">
           <!-- Status multi-select -->
           <div class="filter-group">

@@ -1,26 +1,52 @@
-import type { Deal } from '../types'
+import type { Deal, DealStatus } from '../types'
 
 const ACCOUNT_NAMES = [
-  'Acme Corporation', 'GlobalTech Solutions', 'Pinnacle Systems',
-  'NovaStar Inc.', 'BlueSky Partners', 'TerraFirma Holdings',
-  'Quantum Dynamics', 'Apex Industries', 'Meridian Group',
-  'Zenith Technologies', 'Atlas Digital', 'Horizon Labs',
-  'Vanguard Enterprises', 'Ironclad Security', 'Summit Analytics',
-  'Catalyst Innovations', 'Prism Software', 'Titan Networks',
-  'Eclipse Data', 'Nexus Cloud', 'CoreBridge Solutions',
-  'Silverline Consulting', 'Redwood Partners', 'Orbit Systems',
+  'Acme Corporation',
+  'GlobalTech Solutions',
+  'Pinnacle Systems',
+  'NovaStar Inc.',
+  'BlueSky Partners',
+  'TerraFirma Holdings',
+  'Quantum Dynamics',
+  'Apex Industries',
+  'Meridian Group',
+  'Zenith Technologies',
+  'Atlas Digital',
+  'Horizon Labs',
+  'Vanguard Enterprises',
+  'Ironclad Security',
+  'Summit Analytics',
+  'Catalyst Innovations',
+  'Prism Software',
+  'Titan Networks',
+  'Eclipse Data',
+  'Nexus Cloud',
+  'CoreBridge Solutions',
+  'Silverline Consulting',
+  'Redwood Partners',
+  'Orbit Systems',
   'FusionPoint Inc.'
 ]
 
 const DEAL_PREFIXES = [
-  'Enterprise License', 'Cloud Migration', 'Security Suite',
-  'Data Platform', 'Annual Subscription', 'Managed Services',
-  'Infrastructure Upgrade', 'Compliance Package', 'Support Contract',
-  'Training Program', 'API Integration', 'Backup Solution',
-  'Disaster Recovery', 'DevOps Pipeline', 'Analytics Dashboard'
+  'Enterprise License',
+  'Cloud Migration',
+  'Security Suite',
+  'Data Platform',
+  'Annual Subscription',
+  'Managed Services',
+  'Infrastructure Upgrade',
+  'Compliance Package',
+  'Support Contract',
+  'Training Program',
+  'API Integration',
+  'Backup Solution',
+  'Disaster Recovery',
+  'DevOps Pipeline',
+  'Analytics Dashboard'
 ]
 
-const STATUSES = ['Open', 'Approved', 'Rejected']
+const STATUSES: DealStatus[] = ['Open', 'Approved', 'Rejected']
 
 function seededRandom(seed: number): () => number {
   let s = seed
@@ -33,7 +59,8 @@ function seededRandom(seed: number): () => number {
 function generateDeal(index: number, rand: () => number): Deal {
   const accountName = ACCOUNT_NAMES[Math.floor(rand() * ACCOUNT_NAMES.length)]
   const prefix = DEAL_PREFIXES[Math.floor(rand() * DEAL_PREFIXES.length)]
-  const status = STATUSES[Math.floor(rand() * STATUSES.length)]
+  const status: DealStatus =
+    STATUSES[Math.floor(rand() * STATUSES.length)] ?? 'Open'
   const amount = Math.round((rand() * 195000 + 5000) * 100) / 100
 
   const daysAgo = Math.floor(rand() * 365)
@@ -69,7 +96,11 @@ export function generateDeals(count = 150, seed = 42): Deal[] {
   return Array.from({ length: count }, (_, i) => generateDeal(i, rand))
 }
 
-export function injectDuplicates(deals: Deal[], dupeCount = 8, seed = 99): Deal[] {
+export function injectDuplicates(
+  deals: Deal[],
+  dupeCount = 8,
+  seed = 99
+): Deal[] {
   const rand = seededRandom(seed)
   const dupes: Deal[] = []
   for (let i = 0; i < dupeCount; i++) {

@@ -15,8 +15,9 @@ export function deduplicateDeals(deals: Deal[]): Deal[] {
     } else {
       const existingDate = new Date(existing.updatedDate).getTime()
       const newDate = new Date(deal.updatedDate).getTime()
-
-      if (newDate > existingDate) {
+      // Keep the incoming deal if its date is valid and either the existing
+      // date is invalid or the incoming date is strictly newer.
+      if (!isNaN(newDate) && (isNaN(existingDate) || newDate > existingDate)) {
         dealMap.set(deal.dealId, deal)
       }
     }

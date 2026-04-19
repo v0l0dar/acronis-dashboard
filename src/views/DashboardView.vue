@@ -4,7 +4,7 @@
   import { useI18n } from 'vue-i18n'
   import { useDealStore } from '../stores/dealStore'
   import { isValidDealStatus } from '../utils/security'
-  import type { DealFilters } from '../types'
+  import type { DealFilters, DealStatus } from '../types'
   import SearchBar from '../components/SearchBar.vue'
   import type { SmartSearchResult } from '../utils/smartSearchParser'
   import FilterPanel from '../components/FilterPanel.vue'
@@ -25,7 +25,7 @@
     const rawPage = typeof q.page === 'string' ? parseInt(q.page, 10) : NaN
     const page = !isNaN(rawPage) && rawPage >= 1 ? rawPage : 1
 
-    const statuses: string[] =
+    const statuses: DealStatus[] =
       typeof q.statuses === 'string' && q.statuses
         ? q.statuses.split(',').filter(isValidDealStatus)
         : []
@@ -91,24 +91,22 @@
 
   function onSmartSearch(result: SmartSearchResult): void {
     if (!result.isStructured) {
-      store.setFilters({
+      store.setSearchAndFilters('', {
         statuses: [],
         amountMin: null,
         amountMax: null,
         dateFrom: '',
-        dateTo: '',
+        dateTo: ''
       })
-      store.setSearch('')
       return
     }
-    store.setFilters({
+    store.setSearchAndFilters(result.residualQuery, {
       statuses: result.filters.statuses ?? [],
       amountMin: result.filters.amountMin ?? null,
       amountMax: result.filters.amountMax ?? null,
       dateFrom: result.filters.dateFrom ?? '',
-      dateTo: result.filters.dateTo ?? '',
+      dateTo: result.filters.dateTo ?? ''
     })
-    store.setSearch(result.residualQuery)
   }
 
   function onFilterUpdate(f: Partial<DealFilters>): void {
@@ -139,9 +137,9 @@
 
     <div class="dashboard__toolbar">
       <SearchBar
-          :model-value="store.searchQuery"
-          @search="onSearch"
-          @smart-search="onSmartSearch" />
+        :model-value="store.searchQuery"
+        @search="onSearch"
+        @smart-search="onSmartSearch" />
     </div>
 
     <FilterPanel
@@ -153,7 +151,11 @@
     <div class="dashboard__content">
       <ErrorState
         v-if="store.error"
-        :message="store.error === 'timeout' ? t('errors.timeout') : t('errors.fetchFailed')"
+        :message="
+          store.error === 'timeout'
+            ? t('errors.timeout')
+            : t('errors.fetchFailed')
+        "
         @retry="store.loadDeals()" />
 
       <template v-else>

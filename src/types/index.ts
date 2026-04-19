@@ -1,8 +1,10 @@
+export type DealStatus = 'Open' | 'Approved' | 'Rejected'
+
 export interface Deal {
   dealId: string
   dealName: string
   accountName: string
-  status: string
+  status: DealStatus
   amount: number
   createdDate: string
   updatedDate: string
@@ -14,7 +16,7 @@ export interface Deal {
 }
 
 export interface DealFilters {
-  statuses: string[]
+  statuses: DealStatus[]
   amountMin: number | null
   amountMax: number | null
   dateFrom: string

@@ -1,11 +1,16 @@
 <script setup lang="ts">
-  import { ref, watch, onUnmounted } from 'vue'
+  import { ref, watch, onUnmounted, useId } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { sanitizeSearchQuery } from '../utils/security'
   import { parseSmartSearch } from '../utils/smartSearchParser'
   import type { SmartSearchResult } from '../utils/smartSearchParser'
+  import { useFormatter } from '../composables/useFormatter'
 
   const { t } = useI18n()
+  const { formatAmount } = useFormatter()
+
+  const searchId = useId()
+  const hintId = useId()
   const emit = defineEmits<{
     search: [query: string]
     'smart-search': [result: SmartSearchResult]
@@ -35,16 +40,24 @@
     const raw = (e.target as HTMLInputElement).value
     localQuery.value = raw
 
-    const parsed = parseSmartSearch(raw)
+    const sanitized = sanitizeSearchQuery(raw)
+    const parsed = parseSmartSearch(
+      sanitized,
+      (n) => formatAmount(n, { notation: 'compact', maximumFractionDigits: 1 })
+    )
     smartResult.value = parsed.isStructured ? parsed : null
 
     if (debounceTimer !== null) clearTimeout(debounceTimer)
     debounceTimer = setTimeout(() => {
       if (parsed.isStructured) {
-        emit('smart-search', parsed)
+        const safeResult: SmartSearchResult = {
+          ...parsed,
+          residualQuery: sanitizeSearchQuery(parsed.residualQuery),
+        }
+        emit('smart-search', safeResult)
       } else {
         smartResult.value = null
-        emit('search', sanitizeSearchQuery(raw) as string)
+        emit('search', sanitized)
       }
     }, 300)
   }
@@ -67,7 +80,7 @@
 
 <template>
   <div class="search-bar">
-    <label :for="'search-input'" class="sr-only">{{ t('search.label') }}</label>
+    <label :for="searchId" class="sr-only">{{ t('search.label') }}</label>
     <div class="search-bar__wrapper">
       <svg
         class="search-bar__icon"
@@ -89,12 +102,14 @@
           stroke-linecap="round" />
       </svg>
       <input
-        id="search-input"
+        :id="searchId"
         class="search-bar__input"
         :class="{ 'search-bar__input--smart': smartResult }"
         type="text"
         :placeholder="t('search.placeholder')"
         :value="localQuery"
+        :aria-expanded="smartResult !== null"
+        :aria-controls="hintId"
         autocomplete="off"
         spellcheck="false"
         @input="onInput" />
@@ -113,7 +128,13 @@
       </button>
     </div>
     <transition name="smart-hint">
-      <div v-if="smartResult" class="search-bar__hint">
+      <div
+        v-if="smartResult"
+        :id="hintId"
+        class="search-bar__hint"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
           <path
             d="M6 1l1.2 3.6H11L8.4 6.8l.9 3.6L6 8.4l-3.3 2 .9-3.6L1 4.6h3.8L6 1z"

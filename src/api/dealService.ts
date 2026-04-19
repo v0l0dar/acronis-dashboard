@@ -1,8 +1,15 @@
-import type { Deal, DealsPage, DealFilters, RoleFilter } from '../types'
+import type {
+  Deal,
+  DealsPage,
+  DealFilters,
+  DealStatus,
+  RoleFilter
+} from '../types'
 import { generateDeals, injectDuplicates } from './mockData'
 import { listCache, detailCache } from '../utils/cache'
 import { deduplicateDeals } from '../utils/deduplication'
 import { filterDealsByRole, isValidDealId, safeLog } from '../utils/security'
+import { matchesDealFilters } from '../utils/dealFilters'
 
 const _allDeals = injectDuplicates(generateDeals(150, 42), 10, 99)
 
@@ -10,15 +17,20 @@ const ERROR_RATE = 0.05
 const TIMEOUT_RATE = 0.03
 const LATENCY_MIN = 200
 const LATENCY_MAX = 800
+const TIMEOUT_DELAY_MS = 5000
 
 function simulateLatency(signal?: AbortSignal | null): Promise<void> {
   const ms = LATENCY_MIN + Math.random() * (LATENCY_MAX - LATENCY_MIN)
   return new Promise((resolve, reject) => {
     const timer = setTimeout(resolve, ms)
-    signal?.addEventListener('abort', () => {
-      clearTimeout(timer)
-      reject(new DOMException('Aborted', 'AbortError'))
-    }, { once: true })
+    signal?.addEventListener(
+      'abort',
+      () => {
+        clearTimeout(timer)
+        reject(new DOMException('Aborted', 'AbortError'))
+      },
+      { once: true }
+    )
   })
 }
 
@@ -26,10 +38,12 @@ function sortedStringify(obj: unknown): string {
   if (obj === null || typeof obj !== 'object' || Array.isArray(obj)) {
     return JSON.stringify(obj)
   }
-  const sorted = Object.keys(obj as object).sort().reduce<Record<string, unknown>>((acc, key) => {
-    acc[key] = (obj as Record<string, unknown>)[key]
-    return acc
-  }, {})
+  const sorted = Object.keys(obj as object)
+    .sort()
+    .reduce<Record<string, unknown>>((acc, key) => {
+      acc[key] = (obj as Record<string, unknown>)[key]
+      return acc
+    }, {})
   return JSON.stringify(sorted)
 }
 
@@ -52,10 +66,21 @@ function maybeThrowError(): void {
   }
 }
 
-function maybeThrowTimeout(): void {
-  if (Math.random() < TIMEOUT_RATE) {
-    throw new TimeoutError()
-  }
+async function maybeSimulateTimeout(
+  signal?: AbortSignal | null
+): Promise<void> {
+  if (Math.random() >= TIMEOUT_RATE) return
+  await new Promise<never>((_, reject) => {
+    const timer = setTimeout(() => reject(new TimeoutError()), TIMEOUT_DELAY_MS)
+    signal?.addEventListener(
+      'abort',
+      () => {
+        clearTimeout(timer)
+        reject(new DOMException('Aborted', 'AbortError'))
+      },
+      { once: true }
+    )
+  })
 }
 
 interface FetchDealsParams {
@@ -75,7 +100,9 @@ export async function fetchDeals({
   roleFilter = null,
   signal = null
 }: FetchDealsParams = {}): Promise<DealsPage> {
-  const roleKey = roleFilter ? `${roleFilter.role}:${roleFilter.partnerId}` : 'all'
+  const roleKey = roleFilter
+    ? `${roleFilter.role}:${roleFilter.partnerId}`
+    : 'all'
   const cacheKey = `deals:${page}:${pageSize}:${search}:${sortedStringify(filters)}:${roleKey}`
   const cached = listCache.get(cacheKey) as DealsPage | null
   if (cached) return cached
@@ -83,69 +110,42 @@ export async function fetchDeals({
   safeLog('fetchDeals', { page, pageSize, search, filters, roleFilter })
   await simulateLatency(signal)
   if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
-  maybeThrowTimeout()
+  await maybeSimulateTimeout(signal)
   maybeThrowError()
 
   let deals = deduplicateDeals([..._allDeals])
 
-  if (search) {
-    const q = search.toLowerCase().trim().replace(/\s+/g, ' ')
-    deals = deals.filter(d =>
-      d.dealName.toLowerCase().includes(q) ||
-      d.accountName.toLowerCase().includes(q) ||
-      d.status.toLowerCase().includes(q) ||
-      d.dealId.toLowerCase().includes(q)
-    )
-  }
-
-  if (filters.statuses && filters.statuses.length > 0) {
-    const s = filters.statuses.map(x => x.toLowerCase())
-    deals = deals.filter(d => s.includes(d.status.toLowerCase()))
-  }
-
-  if (filters.amountMin != null) {
-    deals = deals.filter(d => d.amount >= (filters.amountMin as number))
-  }
-  if (filters.amountMax != null) {
-    deals = deals.filter(d => d.amount <= (filters.amountMax as number))
-  }
-
-  if (filters.dateFrom) {
-    const from = new Date(filters.dateFrom).getTime()
-    deals = deals.filter(d => new Date(d.createdDate).getTime() >= from)
-  }
-  if (filters.dateTo) {
-    const to = new Date(filters.dateTo).getTime()
-    deals = deals.filter(d => new Date(d.createdDate).getTime() <= to)
-  }
-
-  if (filters.accountName) {
-    const an = filters.accountName.toLowerCase().trim()
-    deals = deals.filter(d => d.accountName.toLowerCase().includes(an))
-  }
-
-  if (filters.dealName) {
-    const dn = filters.dealName.toLowerCase().trim()
-    deals = deals.filter(d => d.dealName.toLowerCase().includes(dn))
-  }
+  deals = deals.filter((d) => matchesDealFilters(d, search, filters))
 
   if (roleFilter) {
     deals = filterDealsByRole(deals, roleFilter.role, roleFilter.partnerId)
   }
 
-  deals.sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
+  deals.sort(
+    (a, b) =>
+      new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
+  )
 
   const total = deals.length
   const start = (page - 1) * pageSize
   const paged = deals.slice(start, start + pageSize)
 
-  const result: DealsPage = { deals: paged, total, page, pageSize, totalPages: Math.ceil(total / pageSize) }
+  const result: DealsPage = {
+    deals: paged,
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize)
+  }
 
   listCache.set(cacheKey, result)
   return result
 }
 
-export async function fetchDealById(dealId: string, signal?: AbortSignal | null): Promise<Deal | null> {
+export async function fetchDealById(
+  dealId: string,
+  signal?: AbortSignal | null
+): Promise<Deal | null> {
   if (!isValidDealId(dealId)) return null
 
   const cached = detailCache.get(`deal:${dealId}`) as Deal | null
@@ -154,11 +154,11 @@ export async function fetchDealById(dealId: string, signal?: AbortSignal | null)
   safeLog('fetchDealById', { dealId })
   await simulateLatency(signal)
   if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
-  maybeThrowTimeout()
+  await maybeSimulateTimeout(signal)
   maybeThrowError()
 
   const deals = deduplicateDeals([..._allDeals])
-  const deal = deals.find(d => d.dealId === dealId) ?? null
+  const deal = deals.find((d) => d.dealId === dealId) ?? null
 
   if (deal) {
     detailCache.set(`deal:${dealId}`, deal)
@@ -168,6 +168,7 @@ export async function fetchDealById(dealId: string, signal?: AbortSignal | null)
 
 export async function pollUpdates(since: string): Promise<Deal[]> {
   await simulateLatency()
+  await maybeSimulateTimeout()
 
   if (Math.random() < 0.2) {
     const idx = Math.floor(Math.random() * _allDeals.length)
@@ -175,10 +176,12 @@ export async function pollUpdates(since: string): Promise<Deal[]> {
     deal.updatedDate = new Date().toISOString()
 
     if (Math.random() > 0.5) {
-      const statuses = ['Open', 'Approved', 'Rejected']
-      deal.status = statuses[Math.floor(Math.random() * statuses.length)]
+      const statuses: DealStatus[] = ['Open', 'Approved', 'Rejected']
+      deal.status =
+        statuses[Math.floor(Math.random() * statuses.length)] ?? 'Open'
     } else {
-      deal.amount = Math.round((deal.amount * (0.9 + Math.random() * 0.2)) * 100) / 100
+      deal.amount =
+        Math.round(deal.amount * (0.9 + Math.random() * 0.2) * 100) / 100
     }
 
     _allDeals[idx] = deal
@@ -188,7 +191,7 @@ export async function pollUpdates(since: string): Promise<Deal[]> {
   }
 
   const sinceTime = new Date(since).getTime()
-  return _allDeals.filter(d => new Date(d.updatedDate).getTime() > sinceTime)
+  return _allDeals.filter((d) => new Date(d.updatedDate).getTime() > sinceTime)
 }
 
 export function clearAllCaches(): void {

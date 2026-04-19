@@ -9,6 +9,7 @@ import {
 } from '../api/dealService'
 import { ROLES, safeLog } from '../utils/security'
 import { deduplicateDeals, mergeAndDeduplicate } from '../utils/deduplication'
+import { matchesDealFilters } from '../utils/dealFilters'
 import type { Deal, DealFilters, DealsPage } from '../types'
 
 export const useDealStore = defineStore('deals', () => {
@@ -75,53 +76,8 @@ export const useDealStore = defineStore('deals', () => {
   // Server returns the already-filtered page; this is a passthrough, not client-side filtering
   const visibleDeals = computed(() => deals.value)
 
-  // Checks whether a deal satisfies the currently active search query and filters.
   function dealMatchesCurrentFilters(deal: Deal): boolean {
-    const f = filters.value
-    const q = searchQuery.value.toLowerCase().trim().replace(/\s+/g, ' ')
-
-    if (
-      q &&
-      !deal.dealName.toLowerCase().includes(q) &&
-      !deal.accountName.toLowerCase().includes(q) &&
-      !deal.status.toLowerCase().includes(q) &&
-      !deal.dealId.toLowerCase().includes(q)
-    ) {
-      return false
-    }
-    if (
-      f.statuses.length > 0 &&
-      !f.statuses
-        .map((s) => s.toLowerCase())
-        .includes(deal.status.toLowerCase())
-    ) {
-      return false
-    }
-    if (f.amountMin != null && deal.amount < f.amountMin) return false
-    if (f.amountMax != null && deal.amount > f.amountMax) return false
-    if (
-      f.dateFrom &&
-      new Date(deal.createdDate).getTime() < new Date(f.dateFrom).getTime()
-    )
-      return false
-    if (
-      f.dateTo &&
-      new Date(deal.createdDate).getTime() > new Date(f.dateTo).getTime()
-    )
-      return false
-    if (
-      f.accountName &&
-      !deal.accountName
-        .toLowerCase()
-        .includes(f.accountName.toLowerCase().trim())
-    )
-      return false
-    if (
-      f.dealName &&
-      !deal.dealName.toLowerCase().includes(f.dealName.toLowerCase().trim())
-    )
-      return false
-    return true
+    return matchesDealFilters(deal, searchQuery.value, filters.value)
   }
 
   // Actions
@@ -172,7 +128,12 @@ export const useDealStore = defineStore('deals', () => {
       totalPages.value = result.totalPages
     } catch (e: unknown) {
       if (e instanceof DOMException && e.name === 'AbortError') return
-      safeLog('loadDeals:error', e instanceof Error ? { name: e.name, message: e.message } : { message: String(e) })
+      safeLog(
+        'loadDeals:error',
+        e instanceof Error
+          ? { name: e.name, message: e.message }
+          : { message: String(e) }
+      )
       error.value = e instanceof TimeoutError ? 'timeout' : 'error'
       deals.value = []
     } finally {
@@ -205,8 +166,18 @@ export const useDealStore = defineStore('deals', () => {
       }
     } catch (e: unknown) {
       if (e instanceof DOMException && e.name === 'AbortError') return
-      safeLog('loadDealDetail:error', e instanceof Error ? { name: e.name, message: e.message } : { message: String(e) })
-      detailError.value = e instanceof TimeoutError ? 'timeout' : (e instanceof Error ? e.message : 'Failed to load deal')
+      safeLog(
+        'loadDealDetail:error',
+        e instanceof Error
+          ? { name: e.name, message: e.message }
+          : { message: String(e) }
+      )
+      detailError.value =
+        e instanceof TimeoutError
+          ? 'timeout'
+          : e instanceof Error
+            ? e.message
+            : 'Failed to load deal'
     } finally {
       // Guard: a superseded request must not clear the active request's loading state.
       if (currentDetailAbortController === controller) {
@@ -226,6 +197,15 @@ export const useDealStore = defineStore('deals', () => {
   }
 
   function setFilters(newFilters: Partial<DealFilters>): void {
+    filters.value = { ...filters.value, ...newFilters }
+    loadDeals(true)
+  }
+
+  function setSearchAndFilters(
+    query: string,
+    newFilters: Partial<DealFilters>
+  ): void {
+    searchQuery.value = query
     filters.value = { ...filters.value, ...newFilters }
     loadDeals(true)
   }
@@ -285,11 +265,21 @@ export const useDealStore = defineStore('deals', () => {
 
           // Merge in updates that do match active filters
           const matching = updates.filter(dealMatchesCurrentFilters)
+          const prevLength = deals.value.length
           deals.value = (
             matching.length > 0
               ? mergeAndDeduplicate(afterEviction, matching)
               : afterEviction
           ) as Deal[]
+
+          // Keep total/totalPages in sync with the mutated page so the
+          // pagination counter never drifts from what is actually displayed.
+          const delta = deals.value.length - prevLength
+          if (delta !== 0) {
+            total.value = Math.max(0, total.value + delta)
+            totalPages.value =
+              pageSize.value > 0 ? Math.ceil(total.value / pageSize.value) : 0
+          }
         }
       } catch {
         // Silent fail for polling – non-critical
@@ -354,6 +344,7 @@ export const useDealStore = defineStore('deals', () => {
     goToPage,
     setSearch,
     setFilters,
+    setSearchAndFilters,
     clearFilters,
     setStateFromUrl,
     setRole,

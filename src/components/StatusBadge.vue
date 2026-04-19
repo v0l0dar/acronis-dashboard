@@ -1,15 +1,23 @@
 <script setup lang="ts">
+  import { computed } from 'vue'
   import { useI18n } from 'vue-i18n'
+  import type { DealStatus } from '../types'
 
   const { t } = useI18n()
 
   const { status } = defineProps<{
-    status: string
+    status: DealStatus
   }>()
+
+  const KNOWN_STATUSES = new Set<DealStatus>(['Open', 'Approved', 'Rejected'])
+
+  const badgeClass = computed(() =>
+    KNOWN_STATUSES.has(status) ? `status-badge--${status.toLowerCase()}` : null
+  )
 </script>
 
 <template>
-  <span class="status-badge" :class="`status-badge--${status.toLowerCase()}`">
+  <span class="status-badge" :class="badgeClass">
     {{ t(`status.${status}`) }}
   </span>
 </template>

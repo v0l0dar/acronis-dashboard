@@ -4,6 +4,7 @@
   import { useI18n } from 'vue-i18n'
   import { useDealStore } from '../stores/dealStore'
   import { useFormatter } from '../composables/useFormatter'
+  import { isValidEmail } from '../utils/security'
   import StatusBadge from '../components/StatusBadge.vue'
   import ErrorState from '../components/ErrorState.vue'
 
@@ -42,6 +43,11 @@
       minute: '2-digit'
     })
   }
+
+  const contactEmailHref = computed<string | null>(() => {
+    const email = store.currentDeal?.contactEmail
+    return isValidEmail(email) ? `mailto:${email}` : null
+  })
 </script>
 
 <template>
@@ -106,7 +112,11 @@
     <!-- Server error -->
     <ErrorState
       v-else-if="store.detailError"
-      :message="store.detailError === 'timeout' ? t('errors.timeout') : t('errors.detailFailed')"
+      :message="
+        store.detailError === 'timeout'
+          ? t('errors.timeout')
+          : t('errors.detailFailed')
+      "
       @retry="store.loadDealDetail(dealId)" />
 
     <!-- Content -->
@@ -159,10 +169,14 @@
           <div class="detail__field">
             <span class="detail__label">{{ t('deals.contactEmail') }}</span>
             <a
+              v-if="contactEmailHref"
               class="detail__value detail__value--link"
-              :href="`mailto:${store.currentDeal.contactEmail}`">
+              :href="contactEmailHref">
               {{ store.currentDeal.contactEmail }}
             </a>
+            <span v-else class="detail__value">
+              {{ store.currentDeal.contactEmail }}
+            </span>
           </div>
 
           <div class="detail__field">

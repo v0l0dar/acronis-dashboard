@@ -1,4 +1,4 @@
-import type { DealFilters } from '../types'
+import type { DealFilters, DealStatus } from '../types'
 
 export interface SmartSearchResult {
   isStructured: boolean
@@ -7,12 +7,12 @@ export interface SmartSearchResult {
   hint: string
 }
 
-const STATUS_MAP: Readonly<Record<string, string>> = {
+const STATUS_MAP: Readonly<Record<string, DealStatus>> = {
   approved: 'Approved',
   rejected: 'Rejected',
   denied: 'Rejected',
   open: 'Open',
-  pending: 'Open',
+  pending: 'Open'
 }
 
 // Supports "10k", "10K", "10,000", "10000", "10.5k"
@@ -56,7 +56,9 @@ function resolveRelativeDate(
   }
 
   if (normalized === 'this month') {
-    return { dateFrom: toISODate(new Date(today.getFullYear(), today.getMonth(), 1)) }
+    return {
+      dateFrom: toISODate(new Date(today.getFullYear(), today.getMonth(), 1))
+    }
   }
 
   if (normalized === 'last month') {
@@ -119,10 +121,13 @@ const DATE_EXPRESSION_SOURCES: readonly string[] = [
   'this\\s+week',
   'last\\s+year',
   'this\\s+year',
-  'today',
+  'today'
 ]
 
-function buildHint(filters: Partial<DealFilters>): string {
+function buildHint(
+  filters: Partial<DealFilters>,
+  formatAmount: (n: number) => string
+): string {
   const parts: string[] = []
 
   if (filters.statuses && filters.statuses.length > 0) {
@@ -131,12 +136,12 @@ function buildHint(filters: Partial<DealFilters>): string {
 
   if (filters.amountMin != null && filters.amountMax != null) {
     parts.push(
-      `$${filters.amountMin.toLocaleString()}–$${filters.amountMax.toLocaleString()}`
+      `${formatAmount(filters.amountMin)}–${formatAmount(filters.amountMax)}`
     )
   } else if (filters.amountMin != null) {
-    parts.push(`>${filters.amountMin >= 1000 ? `$${(filters.amountMin / 1000).toFixed(0)}k` : `$${filters.amountMin}`}`)
+    parts.push(`>${formatAmount(filters.amountMin)}`)
   } else if (filters.amountMax != null) {
-    parts.push(`<${filters.amountMax >= 1000 ? `$${(filters.amountMax / 1000).toFixed(0)}k` : `$${filters.amountMax}`}`)
+    parts.push(`<${formatAmount(filters.amountMax)}`)
   }
 
   if (filters.dateFrom && filters.dateTo) {
@@ -148,7 +153,14 @@ function buildHint(filters: Partial<DealFilters>): string {
   return parts.join(' · ')
 }
 
-export function parseSmartSearch(input: string): SmartSearchResult {
+function defaultFormatAmount(n: number): string {
+  return n >= 1000 ? `$${(n / 1000).toFixed(0)}k` : `$${n}`
+}
+
+export function parseSmartSearch(
+  input: string,
+  formatAmount: (n: number) => string = defaultFormatAmount
+): SmartSearchResult {
   const filters: Partial<DealFilters> = {}
   let text = input.trim()
 
@@ -163,7 +175,11 @@ export function parseSmartSearch(input: string): SmartSearchResult {
   const statusMatches = [...text.matchAll(statusPattern)]
   if (statusMatches.length > 0) {
     filters.statuses = [
-      ...new Set(statusMatches.map((m) => STATUS_MAP[m[1].toLowerCase()])),
+      ...new Set(
+        statusMatches
+          .map((m) => STATUS_MAP[m[1].toLowerCase()])
+          .filter((s): s is DealStatus => s !== undefined)
+      )
     ]
     text = text.replace(statusPattern, '')
     matched = true
@@ -176,8 +192,14 @@ export function parseSmartSearch(input: string): SmartSearchResult {
   if (betweenMatch) {
     const min = parseAmount(betweenMatch[1])
     const max = parseAmount(betweenMatch[2])
-    if (min !== null) { filters.amountMin = min; matched = true }
-    if (max !== null) { filters.amountMax = max; matched = true }
+    if (min !== null) {
+      filters.amountMin = min
+      matched = true
+    }
+    if (max !== null) {
+      filters.amountMax = max
+      matched = true
+    }
     text = text.replace(betweenPattern, '')
   }
 
@@ -187,7 +209,10 @@ export function parseSmartSearch(input: string): SmartSearchResult {
   const aboveMatch = text.match(abovePattern)
   if (aboveMatch) {
     const val = parseAmount(aboveMatch[1])
-    if (val !== null) { filters.amountMin = val; matched = true }
+    if (val !== null) {
+      filters.amountMin = val
+      matched = true
+    }
     text = text.replace(abovePattern, '')
   }
 
@@ -197,7 +222,10 @@ export function parseSmartSearch(input: string): SmartSearchResult {
   const belowMatch = text.match(belowPattern)
   if (belowMatch) {
     const val = parseAmount(belowMatch[1])
-    if (val !== null) { filters.amountMax = val; matched = true }
+    if (val !== null) {
+      filters.amountMax = val
+      matched = true
+    }
     text = text.replace(belowPattern, '')
   }
 
@@ -227,6 +255,6 @@ export function parseSmartSearch(input: string): SmartSearchResult {
     isStructured: matched,
     filters,
     residualQuery,
-    hint: matched ? buildHint(filters) : '',
+    hint: matched ? buildHint(filters, formatAmount) : ''
   }
 }
