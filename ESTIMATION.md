@@ -12,95 +12,95 @@ Estimates were derived using a combination of **analogous estimation** (based on
 
 | Task                                 | Estimated Time | Confidence | Dependencies |
 | ------------------------------------ | -------------- | ---------- | ------------ |
-| Vite + Vue 3 scaffolding             | 0.5h           | High       | None         |
-| Project structure (folders, aliases) | 0.5h           | High       | Setup        |
-| Router configuration                 | 0.5h           | High       | Setup        |
-| Pinia store setup                    | 0.5h           | High       | Setup        |
-| Design tokens & global CSS           | 1.5h           | Medium     | None         |
+| Vite + Vue 3 scaffolding             | 0.25h          | High       | None         |
+| Project structure (folders, aliases) | 0.05h          | High       | Setup        |
+| Router configuration                 | 0.05h          | High       | Setup        |
+| Pinia store setup                    | 0.05h          | High       | Setup        |
+| Design tokens & global CSS           | 0.1h           | High       | None         |
 
 ### 2. API & Data Layer
 
 | Task                                      | Estimated Time | Confidence | Dependencies  |
 | ----------------------------------------- | -------------- | ---------- | ------------- |
-| Mock data generator                       | 1h             | High       | None          |
-| Deal service (fetch, pagination, filters) | 2h             | Medium     | Mock data     |
-| Caching layer                             | 1h             | Medium     | Service layer |
-| Polling mechanism                         | 1h             | Medium     | Service layer |
-| Error simulation (500, timeout)           | 0.5h           | High       | Service layer |
+| Mock data generator                       | 0.25h          | High       | None          |
+| Deal service (fetch, pagination, filters) | 0.5h           | Medium     | Mock data     |
+| Caching layer                             | 0.1h           | Medium     | Service layer |
+| Polling mechanism                         | 0.1h           | Medium     | Service layer |
+| Error simulation (500, timeout)           | 0.05h          | High       | Service layer |
 
 ### 3. UI Development
 
 | Task                            | Estimated Time | Confidence | Dependencies   |
 | ------------------------------- | -------------- | ---------- | -------------- |
-| AppHeader (branding, dropdowns) | 1.5h           | Medium     | Router, i18n   |
-| SearchBar (debounced)           | 1h             | High       | Store          |
-| FilterPanel (all filter types)  | 3h             | Medium     | Store          |
-| DealTable (desktop + mobile)    | 3h             | Medium     | Store          |
-| PaginationBar                   | 1h             | High       | Store          |
-| StatusBadge                     | 0.25h          | High       | i18n           |
-| ErrorState with retry           | 0.5h           | High       | None           |
-| DashboardView (composition)     | 1h             | Medium     | All components |
-| DealDetailView                  | 1.5h           | Medium     | Store, Router  |
+| AppHeader (branding, dropdowns) | 0.25h          | Medium     | Router, i18n   |
+| SearchBar (debounced)           | 0.25h          | High       | Store          |
+| FilterPanel (all filter types)  | 0.5h           | Medium     | Store          |
+| DealTable (desktop + mobile)    | 0.75h          | Medium     | Store          |
+| PaginationBar                   | 0.25h          | High       | Store          |
+| StatusBadge                     | 0.1h           | High       | i18n           |
+| ErrorState with retry           | 0.1h           | High       | None           |
+| DashboardView (composition)     | 0.15h          | Medium     | All components |
+| DealDetailView                  | 0.15h          | Medium     | Store, Router  |
 
 ### 4. Search Implementation
 
 | Task                            | Estimated Time | Confidence | Dependencies  |
 | ------------------------------- | -------------- | ---------- | ------------- |
-| Global search across all fields | 1h             | High       | Service layer |
-| Case-insensitive + trim logic   | 0.25h          | High       | Search        |
-| Debounce (300ms)                | 0.25h          | High       | SearchBar     |
-| Search + filter combination     | 0.5h           | Medium     | Both systems  |
+| Global search across all fields | 0.25h          | High       | Service layer |
+| Case-insensitive + trim logic   | 0.05h          | High       | Search        |
+| Debounce (300ms)                | 0.1h           | High       | SearchBar     |
+| Search + filter combination     | 0.1h           | Medium     | Both systems  |
 
 ### 5. Filtering
 
 | Task                         | Estimated Time | Confidence | Dependencies |
 | ---------------------------- | -------------- | ---------- | ------------ |
-| Status multi-select          | 0.5h           | High       | FilterPanel  |
-| Amount range filter          | 0.5h           | High       | FilterPanel  |
-| Date range filter            | 0.5h           | Medium     | FilterPanel  |
-| Text contains filters        | 0.5h           | High       | FilterPanel  |
-| Combined filters + clear all | 0.5h           | Medium     | All filters  |
-| Active filter indicators     | 0.25h          | High       | FilterPanel  |
+| Status multi-select          | 0.1h           | High       | FilterPanel  |
+| Amount range filter          | 0.1h           | High       | FilterPanel  |
+| Date range filter            | 0.1h           | Medium     | FilterPanel  |
+| Text contains filters        | 0.1h           | High       | FilterPanel  |
+| Combined filters + clear all | 0.05h          | Medium     | All filters  |
+| Active filter indicators     | 0.05h          | High       | FilterPanel  |
 
 ### 6. Deduplication Logic
 
 | Task                               | Estimated Time | Confidence | Dependencies  |
 | ---------------------------------- | -------------- | ---------- | ------------- |
-| Deduplication utility              | 0.5h           | High       | None          |
-| Integration at fetch/merge/refresh | 0.5h           | Medium     | Service layer |
-| Duplicate injection for testing    | 0.25h          | High       | Mock data     |
+| Deduplication utility              | 0.1h           | High       | None          |
+| Integration at fetch/merge/refresh | 0.1h           | Medium     | Service layer |
+| Duplicate injection for testing    | 0.05h          | High       | Mock data     |
 
 ### 7. Responsive Design
 
 | Task                       | Estimated Time | Confidence | Dependencies   |
 | -------------------------- | -------------- | ---------- | -------------- |
-| Mobile card layout         | 1.5h           | Medium     | DealTable      |
-| Tablet adjustments         | 0.5h           | Medium     | All components |
-| Filter panel responsive    | 0.5h           | Medium     | FilterPanel    |
-| Header responsive          | 0.5h           | Medium     | AppHeader      |
-| Testing across breakpoints | 1h             | Medium     | All            |
+| Mobile card layout         | 0.25h          | Medium     | DealTable      |
+| Tablet adjustments         | 0.1h           | Medium     | All components |
+| Filter panel responsive    | 0.1h           | Medium     | FilterPanel    |
+| Header responsive          | 0.1h           | Medium     | AppHeader      |
+| Testing across breakpoints | 0.2h           | Medium     | All            |
 
 ### 8. Internationalization
 
 | Task                                      | Estimated Time | Confidence | Dependencies |
 | ----------------------------------------- | -------------- | ---------- | ------------ |
-| vue-i18n setup                            | 0.5h           | High       | None         |
-| English locale (base)                     | 0.5h           | High       | None         |
-| Japanese locale                           | 0.75h          | Medium     | English base |
-| German locale                             | 0.75h          | Medium     | English base |
-| Spanish locale                            | 0.75h          | Medium     | English base |
-| Language switcher UI                      | 0.5h           | Medium     | AppHeader    |
-| Locale-aware formatting (dates, currency) | 0.5h           | Medium     | i18n         |
+| vue-i18n setup                            | 0.1h           | High       | None         |
+| English locale (base)                     | 0.15h          | High       | None         |
+| Japanese locale                           | 0.2h           | Medium     | English base |
+| German locale                             | 0.2h           | Medium     | English base |
+| Spanish locale                            | 0.2h           | Medium     | English base |
+| Language switcher UI                      | 0.1h           | Medium     | AppHeader    |
+| Locale-aware formatting (dates, currency) | 0.05h          | Medium     | i18n         |
 
 ### 9. Security Review
 
 | Task                         | Estimated Time | Confidence | Dependencies |
 | ---------------------------- | -------------- | ---------- | ------------ |
-| Input sanitization utilities | 0.75h          | High       | None         |
-| RBAC simulation              | 0.5h           | Medium     | Store        |
-| Safe logging utility         | 0.25h          | High       | None         |
-| Route guard validation       | 0.25h          | High       | Router       |
-| Security documentation       | 0.5h           | High       | All          |
+| Input sanitization utilities | 0.15h          | High       | None         |
+| RBAC simulation              | 0.15h          | Medium     | Store        |
+| Safe logging utility         | 0.1h           | High       | None         |
+| Route guard validation       | 0.05h          | High       | Router       |
+| Security documentation       | 0.05h          | High       | All          |
 
 ### 10. Testing
 
@@ -113,31 +113,31 @@ Estimates were derived using a combination of **analogous estimation** (based on
 
 | Task          | Estimated Time | Confidence | Dependencies     |
 | ------------- | -------------- | ---------- | ---------------- |
-| README.md     | 1.5h           | Medium     | All features     |
-| ESTIMATION.md | 1h             | High       | Planning         |
-| REPORT.md     | 1h             | Medium     | After completion |
-| DECISIONS.md  | 0.75h          | Medium     | Architecture     |
+| README.md     | 0.25h          | Medium     | All features     |
+| ESTIMATION.md | 0.25h          | High       | Planning         |
+| REPORT.md     | 0.15h          | Medium     | After completion |
+| DECISIONS.md  | 0.1h           | Medium     | Architecture     |
 
 ---
 
 ## Summary
 
-| Category                     | Estimated Total |
-| ---------------------------- | --------------- |
-| Project Setup & Architecture | 0.5h            |
-| API & Data Layer             | 1h              |
-| UI Development               | 2.5h            |
-| Search Implementation        | 0.5h            |
-| Filtering                    | 0.5h            |
-| Deduplication Logic          | 0.25h           |
-| Responsive Design            | 0.75h           |
-| Internationalization         | 1h              |
-| Security Review              | 0.5h            |
-| Testing                      | 0.75h           |
-| Documentation                | 0.75h           |
-| **Grand Total**              | **~9h**         |
+| Category                     | Estimated Total | Actual Total |
+| ---------------------------- | --------------- | ------------ |
+| Project Setup & Architecture | 0.5h            | ~1h          |
+| API & Data Layer             | 1h              | ~2.5h        |
+| UI Development               | 2.5h            | ~5h          |
+| Search Implementation        | 0.5h            | ~1h          |
+| Filtering                    | 0.5h            | ~1h          |
+| Deduplication Logic          | 0.25h           | ~0.5h        |
+| Responsive Design            | 0.75h           | ~2h          |
+| Internationalization         | 1h              | ~1.5h        |
+| Security Review              | 0.5h            | ~1h          |
+| Testing                      | 0.75h           | ~1h          |
+| Documentation                | 0.75h           | ~1.5h        |
+| **Grand Total**              | **~9h**         | **~18h**     |
 
-With a focused single-day effort, this fits comfortably within a **1-day** window (~9h including testing and documentation).
+The initial estimate of ~9h proved optimistic. The project took **18 hours** in total — roughly **2× the original estimate**. The main sources of overrun were UI development (responsive layout edge cases, mobile card layout polish), the API/data layer (caching and polling complexity), and iterative debugging across components.
 
 ---
 
