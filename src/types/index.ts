@@ -6,6 +6,7 @@ export interface Deal {
   accountName: string
   status: DealStatus
   amount: number
+  currency: string
   createdDate: string
   updatedDate: string
   assignedTo: string

@@ -81,10 +81,11 @@ function generateDeal(index: number, rand: () => number): Deal {
     accountName,
     status,
     amount,
+    currency: 'EUR',
     createdDate: created.toISOString(),
     updatedDate: updated.toISOString(),
     assignedTo,
-    description: `${prefix} deal for ${accountName}. Estimated value: $${amount.toLocaleString()}.`,
+    description: `${prefix} deal for ${accountName}. Estimated value: €${amount.toLocaleString()}.`,
     contactEmail: `contact@${accountName.toLowerCase().replace(/[^a-z]/g, '')}.com`,
     contactName: `${firstNames[Math.floor(rand() * firstNames.length)]} ${lastNames[Math.floor(rand() * lastNames.length)]}`,
     notes: rand() > 0.5 ? 'Follow up required next week.' : ''

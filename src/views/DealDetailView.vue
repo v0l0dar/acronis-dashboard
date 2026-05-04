@@ -4,7 +4,7 @@
   import { useI18n } from 'vue-i18n'
   import { useDealStore } from '../stores/dealStore'
   import { useFormatter } from '../composables/useFormatter'
-  import { isValidEmail } from '../utils/security'
+  import { isValidEmail, ROLES } from '../utils/security'
   import StatusBadge from '../components/StatusBadge.vue'
   import ErrorState from '../components/ErrorState.vue'
 
@@ -27,6 +27,17 @@
   watch(dealId, (newId) => {
     if (newId) store.loadDealDetail(newId)
   })
+
+  watch(
+    [() => store.currentRole, () => store.currentPartnerId],
+    () => {
+      if (store.currentRole !== ROLES.PARTNER) return
+      const deal = store.currentDeal
+      if (deal && deal.assignedTo !== store.currentPartnerId) {
+        router.replace({ name: 'dashboard' })
+      }
+    }
+  )
 
   function goBack(): void {
     if (window.history.state?.back) {

@@ -41,8 +41,14 @@ export const useDealStore = defineStore('deals', () => {
   })
 
   // RBAC
-  const currentRole = ref<string>(ROLES.ADMIN)
-  const currentPartnerId = ref('partner-1')
+  const ROLE_STORAGE_KEY = 'app-role'
+  const PARTNER_ID_STORAGE_KEY = 'app-partner-id'
+  const currentRole = ref<string>(
+    localStorage.getItem(ROLE_STORAGE_KEY) ?? ROLES.ADMIN
+  )
+  const currentPartnerId = ref(
+    localStorage.getItem(PARTNER_ID_STORAGE_KEY) ?? 'partner-1'
+  )
 
   // Polling
   let pollInterval: ReturnType<typeof setInterval> | null = null
@@ -235,8 +241,13 @@ export const useDealStore = defineStore('deals', () => {
     loadDeals(false)
   }
 
-  function setRole(role: string): void {
+  function setRole(role: string, partnerId?: string): void {
     currentRole.value = role
+    localStorage.setItem(ROLE_STORAGE_KEY, role)
+    if (partnerId) {
+      currentPartnerId.value = partnerId
+      localStorage.setItem(PARTNER_ID_STORAGE_KEY, partnerId)
+    }
     clearAllCaches()
     loadDeals(true)
   }

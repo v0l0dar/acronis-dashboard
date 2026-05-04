@@ -1,17 +1,6 @@
 import { useI18n } from 'vue-i18n'
 
-const LOCALE_CURRENCY = {
-  en: 'USD',
-  ja: 'JPY',
-  de: 'EUR',
-  es: 'EUR'
-} as const satisfies Record<string, string>
-
-type SupportedLocale = keyof typeof LOCALE_CURRENCY
-
-function isSupportedLocale(loc: string): loc is SupportedLocale {
-  return loc in LOCALE_CURRENCY
-}
+const DEFAULT_CURRENCY = 'EUR'
 
 export function useFormatter() {
   const { locale } = useI18n()
@@ -20,12 +9,9 @@ export function useFormatter() {
     amount: number,
     opts: Intl.NumberFormatOptions = {}
   ): string {
-    const currency = isSupportedLocale(locale.value)
-      ? LOCALE_CURRENCY[locale.value]
-      : 'USD'
     return new Intl.NumberFormat(locale.value, {
       style: 'currency',
-      currency,
+      currency: DEFAULT_CURRENCY,
       ...opts
     }).format(amount)
   }

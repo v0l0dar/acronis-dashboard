@@ -29,8 +29,15 @@
     langOpen.value = false
   }
 
-  function setRole(role: string): void {
-    store.setRole(role)
+  const partnerIds = ['partner-1', 'partner-2', 'partner-3']
+
+  function partnerLabel(id: string): string {
+    const num = id.split('-')[1]
+    return `Partner-${num}`
+  }
+
+  function setRole(role: string, partnerId?: string): void {
+    store.setRole(role, partnerId)
     roleOpen.value = false
   }
 
@@ -99,7 +106,7 @@
             <span class="dropdown__label">{{
               store.currentRole === ROLES.ADMIN
                 ? t('roles.admin')
-                : t('roles.partner')
+                : partnerLabel(store.currentPartnerId)
             }}</span>
             <svg
               class="dropdown__chevron"
@@ -125,12 +132,16 @@
               <span class="dropdown__hint">{{ t('roles.adminHint') }}</span>
             </button>
             <button
+              v-for="pid in partnerIds"
+              :key="pid"
               class="dropdown__item"
               :class="{
-                'dropdown__item--active': store.currentRole === ROLES.PARTNER
+                'dropdown__item--active':
+                  store.currentRole === ROLES.PARTNER &&
+                  store.currentPartnerId === pid
               }"
-              @click="setRole(ROLES.PARTNER)">
-              <span>{{ t('roles.partner') }}</span>
+              @click="setRole(ROLES.PARTNER, pid)">
+              <span>{{ partnerLabel(pid) }}</span>
               <span class="dropdown__hint">{{ t('roles.partnerHint') }}</span>
             </button>
           </div>

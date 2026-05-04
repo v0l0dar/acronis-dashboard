@@ -30,6 +30,7 @@ function makeDeal(overrides: Partial<Deal> & { dealId: string }): Deal {
     accountName: 'Acme',
     status: 'Open',
     amount: 5000,
+    currency: 'EUR',
     createdDate: '2024-01-01',
     updatedDate: '2024-01-02',
     assignedTo: 'partner-1',
